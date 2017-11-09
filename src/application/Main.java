@@ -14,6 +14,8 @@ public class Main extends Application {
 			primaryStage.setTitle("Music Player");
 			primaryStage.setScene(new Scene(root));
 			primaryStage.show();
+			
+			//Master branch
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
