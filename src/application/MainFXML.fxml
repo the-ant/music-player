@@ -14,7 +14,7 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="537.0" prefWidth="761.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
 	<top>
-		<VBox prefHeight="65.0" prefWidth="761.0" BorderPane.alignment="CENTER">
+		<VBox fx:id="controller" prefHeight="65.0" prefWidth="761.0" BorderPane.alignment="CENTER">
 			<children>
 				<MenuBar prefHeight="10.0" prefWidth="761.0">
 					<menus>
@@ -35,51 +35,126 @@
 						</Menu>
 					</menus>
 				</MenuBar>
-				<ToolBar prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: white;">
-					<items>
-						<Button mnemonicParsing="false" text="Button" />
-					</items>
-				</ToolBar>
+            <BorderPane nodeOrientation="LEFT_TO_RIGHT" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+               <left>
+                  <Button mnemonicParsing="false" style="-fx-background-color: #aad1f7; -fx-label-padding: 3;" BorderPane.alignment="CENTER">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="file:///D:/Java/WS/music-player/src/icons/ic_music_black.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+               </left>
+               <right>
+                  <TextField prefHeight="25.0" prefWidth="237.0" BorderPane.alignment="CENTER_RIGHT" />
+               </right>
+               <padding>
+                  <Insets left="5.0" right="5.0" />
+               </padding>
+            </BorderPane>
 			</children>
 		</VBox>
 	</top>
 	<left>
-		<AnchorPane prefHeight="460.0" prefWidth="161.0" BorderPane.alignment="CENTER">
-			<children>
-				<VBox layoutX="6.0" prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-					<children>
-						<Separator prefWidth="200.0" />
-                  <Label nodeOrientation="LEFT_TO_RIGHT" text="Library" textFill="#756f6f">
+      <BorderPane prefHeight="472.0" prefWidth="232.0" style="-fx-background-color: white;">
+         <top>
+      				<VBox prefHeight="106.0" prefWidth="197.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
+      					<children>
+      						<Separator prefWidth="200.0" />
+      						<Label nodeOrientation="LEFT_TO_RIGHT" text="Library" textFill="#756f6f">
+      							<VBox.margin>
+      								<Insets bottom="5.0" left="10.0" top="5.0" />
+      							</VBox.margin>
+      							<font>
+      								<Font name="System Bold" size="12.0" />
+      							</font>
+      						</Label>
+      						<HBox fx:id="mainListController" alignment="CENTER_LEFT" style="-fx-background-color: #003f7f;">
+      							<children>
+      								<ImageView fx:id="mainListControllerIcon" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
+      									<HBox.margin>
+      										<Insets />
+      									</HBox.margin>
+      									<image>
+      										<Image url="file:///D:/Java/WS/music-player/src/icons/ic_music_white.png" />
+      									</image>
+      								</ImageView>
+      								<Text fx:id="mainListControllerText" fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="Music">
+      									<HBox.margin>
+      										<Insets />
+      									</HBox.margin>
+      									<font>
+      										<Font name="Calibri Light" size="14.0" />
+      									</font>
+      								</Text>
+      							</children>
                      <VBox.margin>
-                        <Insets bottom="5.0" left="10.0" top="5.0" />
+                        <Insets />
                      </VBox.margin>
-                  </Label>
-                  <HBox prefHeight="50.0" prefWidth="161.0">
-                     <children>
-                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS" />
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
-                     </children>
-                  </HBox>
-					</children>
-				</VBox>
-			</children>
-		</AnchorPane>
+                     <padding>
+                        <Insets bottom="2.0" left="5.0" top="2.0" />
+                     </padding>
+      						</HBox>
+      						<Label nodeOrientation="LEFT_TO_RIGHT" text="Playlists" textFill="#756f6f">
+      							<font>
+      								<Font name="System Bold" size="12.0" />
+      							</font>
+      							<VBox.margin>
+      								<Insets bottom="5.0" left="10.0" top="12.0" />
+      							</VBox.margin>
+      						</Label>
+      						<HBox fx:id="newPlaylistController" alignment="CENTER_LEFT" style="-fx-background-color: white;" VBox.vgrow="ALWAYS">
+      							<children>
+      								<ImageView fx:id="newPlaylistControllerIcon" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+      									<image>
+      										<Image url="file:///D:/Java/WS/music-player/src/icons/ic_playlist_add_black.png" />
+      									</image>
+      									<HBox.margin>
+      										<Insets />
+      									</HBox.margin>
+      								</ImageView>
+      								<Text fx:id="newPlaylistControllerText" strokeType="OUTSIDE" strokeWidth="0.0" text="New Playlist">
+      									<font>
+      										<Font name="Calibri" size="14.0" />
+      									</font>
+      									<HBox.margin>
+      										<Insets />
+      									</HBox.margin>
+      								</Text>
+      							</children>
+                     <padding>
+                        <Insets bottom="2.0" left="10.0" top="2.0" />
+                     </padding>
+      						</HBox>
+      					</children>
+      				</VBox>
+         </top>
+         <center>
+            <ListView fx:id="lvPlaylist" fixedCellSize="0.0" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: white;" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin>
+            </ListView>
+         </center>
+      </BorderPane>
 	</left>
 	<center>
 		<VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
 			<children>
-            <TableView fx:id="tableSongs" pickOnBounds="false" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
-              <columns>
-                <TableColumn fx:id="tableName" prefWidth="137.0" text="Name" />
-                <TableColumn fx:id="tableTime" style="-fx-table-cell-border-color: transparent;" text="Time" />
-                  <TableColumn fx:id="tableArtist" prefWidth="114.0" text="Artist" />
-                  <TableColumn fx:id="tableAlbum" prefWidth="181.0" text="Album" />
-                  <TableColumn fx:id="tableGenre" prefWidth="75.0" text="Genre" />
-              </columns>
-               <columnResizePolicy>
-                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-               </columnResizePolicy>
-            </TableView>
+				<TableView fx:id="tableSongs" pickOnBounds="false" prefHeight="472.0" prefWidth="505.0" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
+					<columns>
+						<TableColumn fx:id="tableName" prefWidth="137.0" text="Name" />
+						<TableColumn fx:id="tableTime" style="-fx-table-cell-border-color: transparent;" text="Time" />
+						<TableColumn fx:id="tableArtist" prefWidth="114.0" text="Artist" />
+						<TableColumn fx:id="tableAlbum" prefWidth="181.0" text="Album" />
+						<TableColumn fx:id="tableGenre" prefWidth="75.0" text="Genre" />
+					</columns>
+					<columnResizePolicy>
+						<TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+					</columnResizePolicy>
+				</TableView>
 			</children>
 		</VBox>
 	</center>

@@ -1,61 +1,58 @@
 package application;
 
-import javafx.beans.property.SimpleStringProperty;
-
 public class Song {
-	private SimpleStringProperty name;
-	private SimpleStringProperty time;
-	private SimpleStringProperty artist;
-	private SimpleStringProperty album;
-	private SimpleStringProperty genre;
+	private String name;
+	private String time;
+	private String artist;
+	private String album;
+	private String genre;
 
 	public Song(String name, String time, String artist, String album, String genre) {
-		super();
-		this.name = new SimpleStringProperty(name);
-		this.time = new SimpleStringProperty(time);
-		this.artist = new SimpleStringProperty(artist);
-		this.album = new SimpleStringProperty(album);
-		this.genre = new SimpleStringProperty(genre);
+		this.name = name;
+		this.time = time;
+		this.artist = artist;
+		this.album = album;
+		this.genre = genre;
 	}
 
 	public String getName() {
-		return name.get();
+		return name;
 	}
 
 	public void setName(String name) {
-		this.name = new SimpleStringProperty(name);
+		this.name = name;
 	}
 
 	public String getTime() {
-		return time.get();
+		return time;
 	}
 
 	public void setTime(String time) {
-		this.time = new SimpleStringProperty(time);
+		this.time = time;
 	}
 
 	public String getArtist() {
-		return artist.get();
+		return artist;
 	}
 
 	public void setArtist(String artist) {
-		this.artist = new SimpleStringProperty(artist);
+		this.artist = artist;
 	}
 
 	public String getAlbum() {
-		return album.get();
+		return album;
 	}
 
 	public void setAlbum(String album) {
-		this.album = new SimpleStringProperty(album);
+		this.album = album;
 	}
 
 	public String getGenre() {
-		return genre.get();
+		return genre;
 	}
 
 	public void setGenre(String genre) {
-		this.genre = new SimpleStringProperty(genre);
+		this.genre = genre;
 	}
 
 }

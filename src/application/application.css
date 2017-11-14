@@ -1,14 +1,2 @@
-.tableSongs{
-    -fx-background-color: transparent;
-}
-
-.tableSongs:focused{
-    -fx-background-color: transparent;
-}
-
-.tableSongs.column-header-background{
-    -fx-background-color:white;
-}
-
 
 
