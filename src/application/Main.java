@@ -6,13 +6,16 @@ import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 
-public class Main extends Application {
+public class Main extends Application {//hello
 	@Override
 	public void start(Stage primaryStage) {
 		try {
+			
 			Parent root = FXMLLoader.load(getClass().getResource("/application/MainFXML.fxml"));
 			primaryStage.setTitle("Music Player");
 			Scene scene = new Scene(root);
+			
+			
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch (Exception e) {
