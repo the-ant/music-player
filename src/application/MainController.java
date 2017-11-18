@@ -11,6 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -67,14 +68,13 @@ public class MainController implements Initializable {
 	}
 
 	public void onAddFiletoLibrary(ActionEvent e) {
-		File file = DirectoryUtil.readPathFile(primaryStage);
-		if (file != null) {
-			String pathFile = file.toURI().toString();
-			if (pathFile != null) {
-				Track song = DirectoryUtil.getInfoSong(pathFile);
-				if (!mData.isExistFile(song)) {
-					mData.writeData(song);
-					listSong.add(song);
+		ObservableList<File> listFile = FXCollections.observableArrayList(DirectoryUtil.readPathFile(primaryStage));
+		if (listFile != null) {
+			ObservableList<Track> listTrack = DirectoryUtil.getInfoSong(listFile);
+			for (Track track : listTrack) {
+				if (!mData.isExistFile(track)) {
+					mData.writeData(track);
+					listSong.add(track);
 				}
 			}
 		}
@@ -99,6 +99,7 @@ public class MainController implements Initializable {
 		tableAlbum.setCellValueFactory(new PropertyValueFactory<Track, String>("Album"));
 		tableGenre.setCellValueFactory(new PropertyValueFactory<Track, String>("Genre"));
 		tableSongs.setPlaceholder(TableViewUtil.createPlaceHolder());
+		tableSongs.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 	}
 
 	private void initListSong() {

@@ -23,7 +23,6 @@ public class MenuUtil {
 		delete.setGraphic(lblDelete);
 		
 		delete.setOnAction(e -> {
-			System.out.println("delete");
 			dataAccess.deleteTrack(track);
 			listSong.remove(track);
 		});

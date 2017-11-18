@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -92,8 +94,8 @@ public class DataAccess {
 		}
 		return result;
 	}
-
-	public boolean isExistFile(Track song) {
+	
+	public boolean isExistFile(Track track) {
 		boolean result = false;
 		JSONObject obj = parseJSONObject();
 		if (obj != null) {
@@ -101,11 +103,10 @@ public class DataAccess {
 			for (int i = 0; i < tracks.size(); i++) {
 				JSONObject element = (JSONObject) tracks.get(i);
 				String location = (String) element.get("location");
-				if (song.getLocation().equals(location)) {
+				if (track.getLocation().equals(location)) {
 					result = true;
 				}
 			}
-
 		}
 		return result;
 	}

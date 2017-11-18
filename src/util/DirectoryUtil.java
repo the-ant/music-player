@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.List;
 
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
@@ -12,17 +13,36 @@ import org.apache.tika.parser.mp3.Mp3Parser;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.DefaultHandler;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import pojos.Track;
 
 public class DirectoryUtil {
 
-	public static File readPathFile(Stage stage) {
+	public static List<File> readPathFile(Stage stage) {
 		FileChooser fc = new FileChooser();
-		// fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("*.mp3"));
-		File file = fc.showOpenDialog(stage);
-		return file;
+
+		ExtensionFilter mp3Filter = new FileChooser.ExtensionFilter("MP3 files", "*.mp3");
+		ExtensionFilter wavFilter = new FileChooser.ExtensionFilter("WAV files", "*.wav");
+		ExtensionFilter wmaFilter = new FileChooser.ExtensionFilter("WMA files", "*.wma");
+
+		fc.getExtensionFilters().addAll(mp3Filter, wavFilter, wmaFilter);
+		List<File> list = fc.showOpenMultipleDialog(stage);
+		return list;
+	}
+
+	public static ObservableList<Track> getInfoSong(ObservableList<File> listFile) {
+		ObservableList<Track> result = FXCollections.observableArrayList();
+		for (File file : listFile) {
+			Track track = getInfoSong(file.toURI().toString());
+			if (track != null) {
+				result.add(track);
+			}
+		}
+		return result;
 	}
 
 	public static Track getInfoSong(String pathFile) {
@@ -37,6 +57,10 @@ public class DirectoryUtil {
 
 			parser.parse(in, handler, metadata, parseContext);
 			in.close();
+
+			System.out.println("size: " + metadata.get("xnpDM:size"));
+			System.out.println("year: " + metadata.get("xnpDM:year"));
+			System.out.println("kind: " + metadata.get("xnpDM:kind"));
 
 			result = new Track();
 			result.setName(metadata.get("title"));
