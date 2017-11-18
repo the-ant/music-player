@@ -1,71 +1,62 @@
 package application;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import javax.swing.GroupLayout.SequentialGroup;
-
-import javafx.application.Platform;
+import data.DataAccess;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.util.Callback;
+import javafx.stage.Stage;
+import pojos.Playlist;
+import pojos.Track;
+import util.CustomPlaylist;
+import util.DirectoryUtil;
+import util.ListViewUtil;
+import util.MenuUtil;
+import util.TableViewUtil;
 
 public class MainController implements Initializable {
-	// ==================Table Songs===========================
 	@FXML
-	private TableView<Song> tableSongs;
+	private TableView<Track> tableSongs;
 	@FXML
-	private TableColumn<Song, String> tableName;
-	@FXML
-	private TableColumn<Song, String> tableTime;
-	@FXML
-	private TableColumn<Song, String> tableArtist;
-	@FXML
-	private TableColumn<Song, String> tableAlbum;
-	@FXML
-	private TableColumn<Song, String> tableGenre;
-	// ========================================================
+	private TableColumn<Track, String> tableName, tableTime, tableArtist, tableAlbum, tableGenre;
 
-	// =====================Controller ListSong==================
 	@FXML
 	private VBox controller;
 	@FXML
-	private HBox mainListController;
+	private HBox mainListController, newPlaylistController;
 	@FXML
-	private ImageView mainListControllerIcon;
+	private ImageView mainListControllerIcon, newPlaylistControllerIcon;
 	@FXML
-	private Text mainListControllerText;
-
-	@FXML
-	private HBox newPlaylistController;
-	@FXML
-	private ImageView newPlaylistControllerIcon;
-	@FXML
-	private Text newPlaylistControllerText;
+	private Text mainListControllerText, newPlaylistControllerText;
 
 	@FXML
 	private ListView<Playlist> lvPlaylist;
 	private ObservableList<Playlist> playList;
+	private ObservableList<Track> listSong;
+	private Stage primaryStage = Main.getPrimaryStage();
+	private Media mMedia;
+	private MediaPlayer mMediaPlayer;
+	private DataAccess mData = DataAccess.getInstance();
 
-	// private ObservableList<String> listNamePlaylist;
 	// ==========================================================
-
-	public ObservableList<Song> listSong = FXCollections.observableArrayList(
-			new Song("Blue", "4:03:", "Big Bang", "Bong Bong Bong Bong Bong Bong Bong Bong", "POP"));
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -73,44 +64,75 @@ public class MainController implements Initializable {
 		initTableSong();
 		initListSong();
 		initAllNewPlaylist();
+	}
 
+	public void onAddFiletoLibrary(ActionEvent e) {
+		File file = DirectoryUtil.readPathFile(primaryStage);
+		if (file != null) {
+			String pathFile = file.toURI().toString();
+			if (pathFile != null) {
+				Track song = DirectoryUtil.getInfoSong(pathFile);
+				if (!mData.isExistFile(song)) {
+					mData.writeData(song);
+					listSong.add(song);
+				}
+			}
+		}
+	}
+
+	private void play(Track song) {
+		String filePath = song.getLocation();
+		if (filePath != null) {
+			if (mMediaPlayer != null) {
+				mMediaPlayer.stop();
+			}
+			mMedia = new Media(filePath);
+			mMediaPlayer = new MediaPlayer(mMedia);
+			mMediaPlayer.setAutoPlay(true);
+		}
+	}
+
+	private void initTableSong() {
+		tableName.setCellValueFactory(new PropertyValueFactory<Track, String>("Name"));
+		tableTime.setCellValueFactory(new PropertyValueFactory<Track, String>("Time"));
+		tableArtist.setCellValueFactory(new PropertyValueFactory<Track, String>("Artist"));
+		tableAlbum.setCellValueFactory(new PropertyValueFactory<Track, String>("Album"));
+		tableGenre.setCellValueFactory(new PropertyValueFactory<Track, String>("Genre"));
+		tableSongs.setPlaceholder(TableViewUtil.createPlaceHolder());
+	}
+
+	private void initListSong() {
+		// Read from file
+		listSong = mData.readData();
+		tableSongs.setItems(listSong);
+
+		// Double click to play this song
+		tableSongs.setRowFactory(tv -> {
+			TableRow<Track> row = new TableRow<>();
+			row.setOnMouseClicked(e -> {
+				Track track = row.getItem();
+				if (e.getClickCount() == 2 && !row.isEmpty()) {
+					if (track != null) {
+						play(track);
+					}
+				}
+				if (!row.isEmpty()) {
+					MenuUtil.createContextMenuForTableRow(mData, row, track, listSong);
+				}
+			});
+			return row;
+		});
 	}
 
 	private void initAllNewPlaylist() {
 		playList = FXCollections.observableArrayList();
-		updateItems();
+		ListViewUtil.updateItems(lvPlaylist);
 		lvPlaylist.setItems(playList);
 		lvPlaylist.setOnMouseClicked(v -> {
 			setSelectedMainList(false);
-//			Playlist item = lvPlaylist.getSelectionModel().getSelectedItem();
+			// Playlist item = lvPlaylist.getSelectionModel().getSelectedItem();
 		});
-	}
 
-	private void updateItems() {
-		lvPlaylist.setCellFactory(new Callback<ListView<Playlist>, ListCell<Playlist>>() {
-
-			@Override
-			public ListCell<Playlist> call(ListView<Playlist> param) {
-				ListCell<Playlist> cell = new ListCell<Playlist>() {
-					@Override
-					protected void updateItem(Playlist item, boolean empty) {
-						super.updateItem(item, empty);
-						if (!empty) {
-							Image img = new Image(item.getPathIcon());
-							ImageView icon = new ImageView(img);
-							icon.setFitHeight(32);
-							icon.setFitWidth(32);
-							setGraphic(icon);
-							setText(item.getFullName());
-						} else {
-							setGraphic(null);
-							setText(null);
-						}
-					}
-				};
-				return cell;
-			}
-		});
 	}
 
 	private void initMainPLaylist() {
@@ -120,42 +142,16 @@ public class MainController implements Initializable {
 		});
 		mainListController.setOnMouseReleased(v -> setSelectedMainList(false));
 		newPlaylistController.setOnMousePressed(v -> {
+
 			setSelectedMainList(false);
 			setSelectedNewPlaylist(true);
-			playList.add(createNewPlaylist());
+
+			playList.add(CustomPlaylist.createNewPlaylist(playList));
 			lvPlaylist.getSelectionModel().select(playList.size() - 1);
 			lvPlaylist.getFocusModel().focus(playList.size() - 1);
 			lvPlaylist.scrollTo(playList.size() - 1);
 		});
 		newPlaylistController.setOnMouseReleased(v -> setSelectedNewPlaylist(false));
-	}
-
-	private Playlist createNewPlaylist() {
-		Playlist newPlaylist = new Playlist();
-		newPlaylist.setName("Playlist");
-		newPlaylist.setId(setIdPlaylist());
-		newPlaylist.setPathIcon("/icons/ic_playlist.png");
-		newPlaylist.setFullName("Playlist" + newPlaylist.getId());
-		return newPlaylist;
-	}
-
-	private int setIdPlaylist() {
-		int result = 0;
-		Playlist pl;
-		for (int i = 0; i < playList.size(); i++) {
-			pl = playList.get(i);
-			if (pl.getName() == "Playlist") {
-				result = pl.getId();
-				break;
-			}
-		}
-		for (int i = 1; i < playList.size(); i++) {
-			pl = playList.get(i);
-			if (pl.getName() == "Playlist" && pl.getId() > result) {
-				result = pl.getId();
-			}
-		}
-		return result + 1;
 	}
 
 	private void setSelectedNewPlaylist(boolean isSelected) {
@@ -180,18 +176,6 @@ public class MainController implements Initializable {
 			mainListControllerIcon.setImage(new Image("/icons/ic_music_black.png"));
 			mainListControllerText.setFill(Color.BLACK);
 		}
-	}
-
-	private void initTableSong() {
-		tableName.setCellValueFactory(new PropertyValueFactory<Song, String>("Name"));
-		tableTime.setCellValueFactory(new PropertyValueFactory<Song, String>("Time"));
-		tableArtist.setCellValueFactory(new PropertyValueFactory<Song, String>("Artist"));
-		tableAlbum.setCellValueFactory(new PropertyValueFactory<Song, String>("Album"));
-		tableGenre.setCellValueFactory(new PropertyValueFactory<Song, String>("Genre"));
-		tableSongs.setItems(listSong);
-	}
-
-	private void initListSong() {
 	}
 
 }

@@ -1,2 +1,10 @@
+.table-view:focused {
+  -fx-background-color: transparent ,-fx-box-border, -fx-control-inner-background;
+  -fx-background-insets: -1.4, 0, 1;
+  -fx-background-radius: 1.4, 0, 0;
+  -fx-padding: 1; 
+}
 
-
+.list-view:focused {
+  -fx-background-color: white ,-fx-box-border, -fx-control-inner-background;
+}
