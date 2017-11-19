@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import de.jensd.fx.glyphs.fontawesome.*?>
 <?import javafx.scene.input.*?>
 <?import de.jensd.fx.glyphs.testapps.*?>
 <?import javafx.scene.text.*?>
@@ -196,4 +197,112 @@
 			</children>
 		</VBox>
 	</center>
+	<bottom>
+		<BorderPane fx:id="bottomBar" prefHeight="58.0" prefWidth="761.0"
+			BorderPane.alignment="CENTER">
+			<left>
+				<BorderPane prefHeight="200.0" prefWidth="240.0"
+					BorderPane.alignment="CENTER">
+					<left>
+						<HBox alignment="CENTER" prefHeight="200.0" prefWidth="240.0"
+							BorderPane.alignment="CENTER">
+							<children>
+								<FontAwesomeIconView fx:id="preSongBtn"
+									glyphName="BACKWARD"
+									glyphStyle="-fx-fill: linear-gradient(#70b4e5 0%, #247cbc 70%, #2c85c1 85%)"
+									size="28" />
+								<FontAwesomeIconView fx:id="playSongBtn"
+									glyphName="PLAY"
+									glyphStyle="-fx-fill: linear-gradient(#70b4e5 0%, #247cbc 70%, #2c85c1 85%)"
+									size="28">
+									<HBox.margin>
+										<Insets left="20.0" />
+									</HBox.margin>
+								</FontAwesomeIconView>
+								<FontAwesomeIconView fx:id="nextSongBtn"
+									glyphName="FORWARD"
+									glyphStyle="-fx-fill: linear-gradient(#70b4e5 0%, #247cbc 70%, #2c85c1 85%)"
+									size="28">
+									<HBox.margin>
+										<Insets left="20.0" />
+									</HBox.margin>
+								</FontAwesomeIconView>
+							</children>
+						</HBox>
+					</left>
+				</BorderPane>
+			</left>
+			<center>
+				<BorderPane prefHeight="58.0" prefWidth="352.0"
+					BorderPane.alignment="CENTER">
+					<left>
+						<BorderPane prefHeight="200.0" prefWidth="400.0"
+							BorderPane.alignment="CENTER">
+							<left>
+								<ImageView fx:id="imageSong" fitHeight="40.0"
+									fitWidth="40.0" pickOnBounds="true" preserveRatio="true"
+									BorderPane.alignment="CENTER">
+									<image>
+										<Image url="@../icons/acoustic-guitar.png" />
+									</image>
+									<BorderPane.margin>
+										<Insets right="10.0" />
+									</BorderPane.margin>
+								</ImageView>
+							</left>
+							<center>
+								<VBox alignment="CENTER" prefHeight="200.0" prefWidth="300.0"
+									BorderPane.alignment="CENTER">
+									<children>
+										<Label fx:id="nameSong" text="Label" />
+										<Label fx:id="artistSong" text="Label" textFill="#827c7c" />
+										<Slider fx:id="sliderSong" prefHeight="14.0" prefWidth="292.0" />
+									</children>
+								</VBox>
+							</center>
+						</BorderPane>
+					</left>
+					<center>
+						<VBox alignment="CENTER" prefHeight="200.0" prefWidth="50.0"
+							BorderPane.alignment="CENTER">
+							<children>
+								<FontAwesomeIconView fx:id="randomSong"
+									glyphName="EXCHANGE"
+									glyphStyle="-fx-fill: linear-gradient(#70b4e5 0%, #247cbc 70%, #2c85c1 85%)"
+									size="20" />
+								<Label fx:id="timeSong" text="Label" textFill="#827c7c">
+									<VBox.margin>
+										<Insets top="8.0" />
+									</VBox.margin>
+								</Label>
+							</children>
+						</VBox>
+					</center>
+					<right>
+						<BorderPane prefHeight="200.0" prefWidth="50.0"
+							BorderPane.alignment="CENTER">
+							<center>
+								<Slider fx:id="volumeSong" orientation="VERTICAL"
+									BorderPane.alignment="CENTER">
+									<BorderPane.margin>
+										<Insets />
+									</BorderPane.margin>
+								</Slider>
+							</center>
+							<bottom>
+								<FontAwesomeIconView fx:id="volumeBtn"
+									glyphName="SORT_UP"
+									glyphStyle="-fx-fill: linear-gradient(#70b4e5 0%, #247cbc 70%, #2c85c1 85%)"
+									BorderPane.alignment="CENTER">
+									<BorderPane.margin>
+										<Insets />
+									</BorderPane.margin>
+								</FontAwesomeIconView>
+							</bottom>
+						</BorderPane>
+					</right>
+				</BorderPane>
+			</center>
+		</BorderPane>
+	</bottom>
 </BorderPane>

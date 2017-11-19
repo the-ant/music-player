@@ -2,29 +2,41 @@ package application;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 import data.DataAccess;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import pojos.Playlist;
 import pojos.Track;
 import util.CustomPlaylist;
@@ -58,13 +70,32 @@ public class MainController implements Initializable {
 	private DataAccess mData = DataAccess.getInstance();
 
 	// ==========================================================
+	public static final int SONG_DEFAULT = 0;
+	public static final int SONG_REPEAT = SONG_DEFAULT + 1;
+	public static final int SONG_RANDOM = SONG_REPEAT + 1;
+	private int flagTypeNextSong = SONG_DEFAULT;
+	private int flagShowVolumeSlider = 0;
+	
+	@FXML
+	private BorderPane bottomBar;
+	@FXML
+	private FontAwesomeIconView nextSongBtn, preSongBtn, playSongBtn, randomSong, volumeBtn;
+	@FXML
+	private Label nameSong, artistSong, timeSong;
+	@FXML
+	private ImageView imageSong;
+	@FXML
+	private Slider sliderSong, volumeSong;
+	private Duration duration;
 
+	// =============================================================
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		initMainPLaylist();
 		initTableSong();
 		initListSong();
 		initAllNewPlaylist();
+		initControllSong();
 	}
 
 	public void onAddFiletoLibrary(ActionEvent e) {
@@ -80,7 +111,7 @@ public class MainController implements Initializable {
 		}
 	}
 
-	private void play(Track song) {
+	private void playSong(Track song) {
 		String filePath = song.getLocation();
 		if (filePath != null) {
 			if (mMediaPlayer != null) {
@@ -89,6 +120,154 @@ public class MainController implements Initializable {
 			mMedia = new Media(filePath);
 			mMediaPlayer = new MediaPlayer(mMedia);
 			mMediaPlayer.setAutoPlay(true);
+
+			mMediaPlayer.setOnReady(new Runnable() {
+				public void run() {
+					duration = mMediaPlayer.getMedia().getDuration();
+					updateTimeSongBar();
+				}
+			});
+
+			playSongBtn.setGlyphName("PAUSE");
+			flagShowVolumeSlider = 1;
+
+			mMediaPlayer.setOnEndOfMedia(new Runnable() {
+				public void run() {
+					nextSong();
+				}
+			});
+			int ind = tableSongs.getSelectionModel().getSelectedIndex();
+			Track track = tableSongs.getItems().get(ind);
+			nameSong.setText(track.getName().toString());
+			artistSong.setText(track.getArtist().toString());
+			// set image album file mp3
+			// imageSong.setImage(track.setImgAlbumCover(new
+			// Image("/icons/ic_music_black.png")));
+
+			mMediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
+				@Override
+				public void changed(ObservableValue<? extends Duration> observable, Duration oldValue,
+						Duration newValue) {
+					updateTimeSongBar();
+				}
+			});
+			sliderSong.valueProperty().addListener(new InvalidationListener() {
+				public void invalidated(Observable ov) {
+					if (sliderSong.isValueChanging()) {
+						// multiply duration by percentage calculated by slider position
+						if (duration != null) {
+							mMediaPlayer.seek(duration.multiply(sliderSong.getValue() / 100.0));
+						}
+						updateTimeSongBar();
+					}
+				}
+			});
+
+			volumeSong.valueProperty().addListener(new InvalidationListener() {
+				public void invalidated(Observable ov) {
+					if (volumeSong.isValueChanging()) {
+						mMediaPlayer.setVolume(volumeSong.getValue() / 100.0);
+					}
+				}
+			});
+		}
+	}
+
+	protected void updateTimeSongBar() {
+		if (timeSong != null && sliderSong != null && volumeSong != null && duration != null) {
+			Platform.runLater(new Runnable() {
+				@SuppressWarnings("deprecation")
+				public void run() {
+					Duration currentTime = mMediaPlayer.getCurrentTime();
+					timeSong.setText(formatTime(currentTime, duration));
+					sliderSong.setDisable(duration.isUnknown());
+					if (!sliderSong.isDisabled() && duration.greaterThan(Duration.ZERO)
+							&& !sliderSong.isValueChanging()) {
+						sliderSong.setValue(currentTime.divide(duration).toMillis() * 100.0);
+					}
+					if (!volumeSong.isValueChanging()) {
+						volumeSong.setValue((int) Math.round(mMediaPlayer.getVolume() * 100));
+					}
+				}
+			});
+		}
+	}
+
+	private static String formatTime(Duration elapsed, Duration duration) {
+		// hang cop
+		int intElapsed = (int) Math.floor(elapsed.toSeconds());
+		int elapsedHours = intElapsed / (60 * 60);
+		if (elapsedHours > 0) {
+			intElapsed -= elapsedHours * 60 * 60;
+		}
+		int elapsedMinutes = intElapsed / 60;
+		int elapsedSeconds = intElapsed - elapsedHours * 60 * 60 - elapsedMinutes * 60;
+
+		if (duration.greaterThan(Duration.ZERO)) {
+			int intDuration = (int) Math.floor(duration.toSeconds());
+			int durationHours = intDuration / (60 * 60);
+			if (durationHours > 0) {
+				intDuration -= durationHours * 60 * 60;
+			}
+			int durationMinutes = intDuration / 60;
+			int durationSeconds = intDuration - durationHours * 60 * 60 - durationMinutes * 60;
+			if (durationHours > 0) {
+				return String.format("%d:%02d:%02d/%d:%02d:%02d", elapsedHours, elapsedMinutes, elapsedSeconds,
+						durationHours, durationMinutes, durationSeconds);
+			} else {
+				return String.format("%02d:%02d/%02d:%02d", elapsedMinutes, elapsedSeconds, durationMinutes,
+						durationSeconds);
+			}
+		} else {
+			if (elapsedHours > 0) {
+				return String.format("%d:%02d:%02d", elapsedHours, elapsedMinutes, elapsedSeconds);
+			} else {
+				return String.format("%02d:%02d", elapsedMinutes, elapsedSeconds);
+			}
+		}
+	}
+
+	private void nextSong() {
+		int idx = tableSongs.getSelectionModel().getSelectedIndex();
+		Track track = null;
+		switch (flagTypeNextSong) {
+		case SONG_REPEAT:
+			track = tableSongs.getItems().get(idx);
+			if (track != null) {
+				playSong(track);
+			}
+			break;
+		case SONG_RANDOM:
+			Random rd = new Random();
+			idx = rd.nextInt(listSong.size() - 1);
+			tableSongs.getSelectionModel().clearAndSelect(idx);
+			track = tableSongs.getItems().get(idx);
+			if (track != null) {
+				playSong(track);
+			}
+			break;
+		default:
+			if (listSong.size() == idx + 1) {
+				idx = -1;
+			}
+			tableSongs.getSelectionModel().clearAndSelect(idx + 1);
+			track = tableSongs.getItems().get(idx + 1);
+			if (track != null) {
+				playSong(track);
+			}
+			break;
+		}
+	}
+
+	private void previousSong() {
+		int idx = tableSongs.getSelectionModel().getSelectedIndex();
+		if (idx == 0) {
+			idx = listSong.size();
+		}
+		tableSongs.getSelectionModel().clearAndSelect(idx - 1);
+		Track track = tableSongs.getItems().get(idx - 1);
+		if (track != null) {
+			playSong(track);
 		}
 	}
 
@@ -106,15 +285,19 @@ public class MainController implements Initializable {
 		// Read from file
 		listSong = mData.readData();
 		tableSongs.setItems(listSong);
-
+		
 		// Double click to play this song
 		tableSongs.setRowFactory(tv -> {
 			TableRow<Track> row = new TableRow<>();
 			row.setOnMouseClicked(e -> {
 				Track track = row.getItem();
 				if (e.getClickCount() == 2 && !row.isEmpty()) {
+					bottomBar.setVisible(true);
+					bottomBar.setManaged(true);
+					volumeSong.setVisible(false);
+					volumeSong.setManaged(false);
 					if (track != null) {
-						play(track);
+						playSong(track);
 					}
 				}
 				if (!row.isEmpty()) {
@@ -153,6 +336,59 @@ public class MainController implements Initializable {
 			lvPlaylist.scrollTo(playList.size() - 1);
 		});
 		newPlaylistController.setOnMouseReleased(v -> setSelectedNewPlaylist(false));
+	}
+
+	private void initControllSong() {
+		bottomBar.setVisible(false);
+		bottomBar.setManaged(false);
+
+		nextSongBtn.setOnMouseClicked(v -> {
+			nextSong();
+		});
+		preSongBtn.setOnMouseClicked(v -> {
+			previousSong();
+		});
+		playSongBtn.setOnMouseClicked(v -> {
+			if (mMediaPlayer.getStatus().equals(Status.PLAYING)) {
+				playSongBtn.setGlyphName("PLAY");
+				mMediaPlayer.pause();
+			} else if (mMediaPlayer.getStatus().equals(Status.PAUSED)) {
+				playSongBtn.setGlyphName("PAUSE");
+				mMediaPlayer.play();
+			}
+		});
+		volumeBtn.setOnMouseClicked(v -> {
+			if (flagShowVolumeSlider == 1) {
+				volumeSong.setVisible(true);
+				volumeSong.setManaged(true);
+				flagShowVolumeSlider = 1;
+			} else {
+				volumeSong.setVisible(false);
+				volumeSong.setManaged(false);
+				flagShowVolumeSlider = 0;
+			}
+
+		});
+		randomSong.setOnMouseClicked(v -> {
+			if (flagTypeNextSong == SONG_RANDOM) {
+				flagTypeNextSong = SONG_DEFAULT;
+			} else {
+				flagTypeNextSong++;
+			}
+
+			switch (flagTypeNextSong) {
+			case SONG_REPEAT:
+				randomSong.setGlyphName("REPEAT");
+				break;
+			case SONG_RANDOM:
+				randomSong.setGlyphName("RANDOM");
+				break;
+			default:
+				randomSong.setGlyphName("EXCHANGE");
+				break;
+			}
+		});
+
 	}
 
 	private void setSelectedNewPlaylist(boolean isSelected) {

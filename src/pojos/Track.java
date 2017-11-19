@@ -14,12 +14,12 @@ public class Track {
 	private String location;
 
 	public Track() {
-		this.name = "UNKNOWN";
-		this.artist = "UNKNOWN";
-		this.album = "UNKNOWN";
-		this.genre = "UNKNOWN";
-		this.kind = "UNKNOWN";
-		this.location = "UNKNOWN";
+		this.name = "";
+		this.artist = "";
+		this.album = "";
+		this.genre = "";
+		this.kind = "";
+		this.location = "";
 	}
 
 	public Track(long id, long size, long year, long time, String name, String artist, String album, String genre,

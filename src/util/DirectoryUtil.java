@@ -49,25 +49,30 @@ public class DirectoryUtil {
 		Track result = null;
 		try {
 			File file = new File(new URI(pathFile));
+			String kind = pathFile.substring(pathFile.length() - 3);
+
 			InputStream in = new FileInputStream(file);
-			ContentHandler handler = new DefaultHandler();
-			Metadata metadata = new Metadata();
-			Parser parser = new Mp3Parser();
-			ParseContext parseContext = new ParseContext();
-
-			parser.parse(in, handler, metadata, parseContext);
-			in.close();
-
-			System.out.println("size: " + metadata.get("xnpDM:size"));
-			System.out.println("year: " + metadata.get("xnpDM:year"));
-			System.out.println("kind: " + metadata.get("xnpDM:kind"));
 
 			result = new Track();
-			result.setName(metadata.get("title"));
-			result.setArtist(metadata.get("xmpDM:artist"));
-			result.setAlbum(metadata.get("xmpDM:album"));
-			result.setGenre(metadata.get("xmpDM:genre"));
-			result.setLocation(pathFile);
+			if (kind.equals("wav") || kind.equals("wma")) {
+				result.setName(file.getName().substring(0, file.getName().length() - 4));
+				result.setLocation(pathFile);
+			} else {
+
+				ContentHandler handler = new DefaultHandler();
+				Metadata metadata = new Metadata();
+				Parser parser = new Mp3Parser();
+				ParseContext parseContext = new ParseContext();
+
+				parser.parse(in, handler, metadata, parseContext);
+				in.close();
+
+				result.setName(metadata.get("title"));
+				result.setArtist(metadata.get("xmpDM:artist"));
+				result.setAlbum(metadata.get("xmpDM:album"));
+				result.setGenre(metadata.get("xmpDM:genre"));
+				result.setLocation(pathFile);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
