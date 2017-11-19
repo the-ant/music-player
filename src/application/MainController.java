@@ -7,12 +7,9 @@ import java.util.ResourceBundle;
 
 import data.DataAccess;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -22,7 +19,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
@@ -178,7 +174,6 @@ public class MainController implements Initializable {
 	protected void updateTimeSongBar() {
 		if (timeSong != null && sliderSong != null && volumeSong != null && duration != null) {
 			Platform.runLater(new Runnable() {
-				@SuppressWarnings("deprecation")
 				public void run() {
 					Duration currentTime = mMediaPlayer.getCurrentTime();
 					timeSong.setText(SongController.formatTime(currentTime, duration));
