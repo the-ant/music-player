@@ -7,9 +7,12 @@ import java.util.ResourceBundle;
 
 import data.DataAccess;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -19,6 +22,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
@@ -43,6 +47,7 @@ import util.CustomPlaylist;
 import util.DirectoryUtil;
 import util.ListViewUtil;
 import util.MenuUtil;
+import util.SongController;
 import util.TableViewUtil;
 
 public class MainController implements Initializable {
@@ -70,16 +75,13 @@ public class MainController implements Initializable {
 	private DataAccess mData = DataAccess.getInstance();
 
 	// ==========================================================
-	public static final int SONG_DEFAULT = 0;
-	public static final int SONG_REPEAT = SONG_DEFAULT + 1;
-	public static final int SONG_RANDOM = SONG_REPEAT + 1;
-	private int flagTypeNextSong = SONG_DEFAULT;
-	private int flagShowVolumeSlider = 0;
-	
+
+	private int flagTypeNextSong = SongController.SONG_DEFAULT;
+
 	@FXML
 	private BorderPane bottomBar;
 	@FXML
-	private FontAwesomeIconView nextSongBtn, preSongBtn, playSongBtn, randomSong, volumeBtn;
+	private FontAwesomeIconView nextSongBtn, preSongBtn, playSongBtn, randomSong;
 	@FXML
 	private Label nameSong, artistSong, timeSong;
 	@FXML
@@ -112,6 +114,7 @@ public class MainController implements Initializable {
 	}
 
 	private void playSong(Track song) {
+
 		String filePath = song.getLocation();
 		if (filePath != null) {
 			if (mMediaPlayer != null) {
@@ -129,7 +132,7 @@ public class MainController implements Initializable {
 			});
 
 			playSongBtn.setGlyphName("PAUSE");
-			flagShowVolumeSlider = 1;
+			//flagShowVolumeSlider = 1;
 
 			mMediaPlayer.setOnEndOfMedia(new Runnable() {
 				public void run() {
@@ -141,8 +144,7 @@ public class MainController implements Initializable {
 			nameSong.setText(track.getName().toString());
 			artistSong.setText(track.getArtist().toString());
 			// set image album file mp3
-			// imageSong.setImage(track.setImgAlbumCover(new
-			// Image("/icons/ic_music_black.png")));
+			// imageSong.setImage("");
 
 			mMediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
 				@Override
@@ -179,11 +181,11 @@ public class MainController implements Initializable {
 				@SuppressWarnings("deprecation")
 				public void run() {
 					Duration currentTime = mMediaPlayer.getCurrentTime();
-					timeSong.setText(formatTime(currentTime, duration));
+					timeSong.setText(SongController.formatTime(currentTime, duration));
 					sliderSong.setDisable(duration.isUnknown());
 					if (!sliderSong.isDisabled() && duration.greaterThan(Duration.ZERO)
 							&& !sliderSong.isValueChanging()) {
-						sliderSong.setValue(currentTime.divide(duration).toMillis() * 100.0);
+						sliderSong.setValue(currentTime.divide(duration.toMillis()).toMillis() * 100.0);
 					}
 					if (!volumeSong.isValueChanging()) {
 						volumeSong.setValue((int) Math.round(mMediaPlayer.getVolume() * 100));
@@ -193,51 +195,17 @@ public class MainController implements Initializable {
 		}
 	}
 
-	private static String formatTime(Duration elapsed, Duration duration) {
-		// hang cop
-		int intElapsed = (int) Math.floor(elapsed.toSeconds());
-		int elapsedHours = intElapsed / (60 * 60);
-		if (elapsedHours > 0) {
-			intElapsed -= elapsedHours * 60 * 60;
-		}
-		int elapsedMinutes = intElapsed / 60;
-		int elapsedSeconds = intElapsed - elapsedHours * 60 * 60 - elapsedMinutes * 60;
-
-		if (duration.greaterThan(Duration.ZERO)) {
-			int intDuration = (int) Math.floor(duration.toSeconds());
-			int durationHours = intDuration / (60 * 60);
-			if (durationHours > 0) {
-				intDuration -= durationHours * 60 * 60;
-			}
-			int durationMinutes = intDuration / 60;
-			int durationSeconds = intDuration - durationHours * 60 * 60 - durationMinutes * 60;
-			if (durationHours > 0) {
-				return String.format("%d:%02d:%02d/%d:%02d:%02d", elapsedHours, elapsedMinutes, elapsedSeconds,
-						durationHours, durationMinutes, durationSeconds);
-			} else {
-				return String.format("%02d:%02d/%02d:%02d", elapsedMinutes, elapsedSeconds, durationMinutes,
-						durationSeconds);
-			}
-		} else {
-			if (elapsedHours > 0) {
-				return String.format("%d:%02d:%02d", elapsedHours, elapsedMinutes, elapsedSeconds);
-			} else {
-				return String.format("%02d:%02d", elapsedMinutes, elapsedSeconds);
-			}
-		}
-	}
-
 	private void nextSong() {
 		int idx = tableSongs.getSelectionModel().getSelectedIndex();
 		Track track = null;
 		switch (flagTypeNextSong) {
-		case SONG_REPEAT:
+		case SongController.SONG_REPEAT:
 			track = tableSongs.getItems().get(idx);
 			if (track != null) {
 				playSong(track);
 			}
 			break;
-		case SONG_RANDOM:
+		case SongController.SONG_RANDOM:
 			Random rd = new Random();
 			idx = rd.nextInt(listSong.size() - 1);
 			tableSongs.getSelectionModel().clearAndSelect(idx);
@@ -285,7 +253,7 @@ public class MainController implements Initializable {
 		// Read from file
 		listSong = mData.readData();
 		tableSongs.setItems(listSong);
-		
+
 		// Double click to play this song
 		tableSongs.setRowFactory(tv -> {
 			TableRow<Track> row = new TableRow<>();
@@ -294,8 +262,7 @@ public class MainController implements Initializable {
 				if (e.getClickCount() == 2 && !row.isEmpty()) {
 					bottomBar.setVisible(true);
 					bottomBar.setManaged(true);
-					volumeSong.setVisible(false);
-					volumeSong.setManaged(false);
+				
 					if (track != null) {
 						playSong(track);
 					}
@@ -357,30 +324,18 @@ public class MainController implements Initializable {
 				mMediaPlayer.play();
 			}
 		});
-		volumeBtn.setOnMouseClicked(v -> {
-			if (flagShowVolumeSlider == 1) {
-				volumeSong.setVisible(true);
-				volumeSong.setManaged(true);
-				flagShowVolumeSlider = 1;
-			} else {
-				volumeSong.setVisible(false);
-				volumeSong.setManaged(false);
-				flagShowVolumeSlider = 0;
-			}
-
-		});
 		randomSong.setOnMouseClicked(v -> {
-			if (flagTypeNextSong == SONG_RANDOM) {
-				flagTypeNextSong = SONG_DEFAULT;
+			if (flagTypeNextSong == SongController.SONG_RANDOM) {
+				flagTypeNextSong = SongController.SONG_DEFAULT;
 			} else {
 				flagTypeNextSong++;
 			}
 
 			switch (flagTypeNextSong) {
-			case SONG_REPEAT:
+			case SongController.SONG_REPEAT:
 				randomSong.setGlyphName("REPEAT");
 				break;
-			case SONG_RANDOM:
+			case SongController.SONG_RANDOM:
 				randomSong.setGlyphName("RANDOM");
 				break;
 			default:
@@ -388,7 +343,6 @@ public class MainController implements Initializable {
 				break;
 			}
 		});
-
 	}
 
 	private void setSelectedNewPlaylist(boolean isSelected) {

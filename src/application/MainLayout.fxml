@@ -15,23 +15,17 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity"
-	minHeight="-Infinity" minWidth="-Infinity" prefHeight="537.0"
-	prefWidth="761.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="application.MainController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="537.0" prefWidth="761.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
 	<top>
-		<VBox fx:id="controller" prefHeight="65.0" prefWidth="761.0"
-			BorderPane.alignment="CENTER">
+		<VBox fx:id="controller" prefHeight="65.0" prefWidth="761.0" BorderPane.alignment="CENTER">
 			<children>
 				<MenuBar prefHeight="10.0" prefWidth="761.0">
 					<menus>
 						<Menu mnemonicParsing="false" text="File">
 							<items>
-								<MenuItem mnemonicParsing="false" onAction="#onAddFiletoLibrary"
-									text="Add File to Library...">
+								<MenuItem mnemonicParsing="false" onAction="#onAddFiletoLibrary" text="Add File to Library...">
 									<accelerator>
-										<KeyCodeCombination alt="UP" code="O"
-											control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+										<KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
 									</accelerator>
 								</MenuItem>
 							</items>
@@ -48,41 +42,30 @@
 						</Menu>
 					</menus>
 				</MenuBar>
-				<AnchorPane prefHeight="56.0" prefWidth="761.0"
-					VBox.vgrow="ALWAYS">
+				<AnchorPane prefHeight="56.0" prefWidth="761.0" VBox.vgrow="ALWAYS">
 					<children>
-						<Button layoutX="10.0" layoutY="5.0" mnemonicParsing="false"
-							style="-fx-background-color: #aad1f7; -fx-label-padding: 3;"
-							AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0"
-							AnchorPane.topAnchor="5.0">
+						<Button layoutX="10.0" layoutY="5.0" mnemonicParsing="false" style="-fx-background-color: #aad1f7; -fx-label-padding: 3;" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0">
 							<graphic>
-								<ImageView fitHeight="30.0" fitWidth="30.0"
-									pickOnBounds="true" preserveRatio="true">
+								<ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
 									<image>
-										<Image
-											url="file:///D:/Java/WS/music-player/src/icons/acoustic-guitar%20(1).png" />
+										<Image url="file:///D:/Java/WS/music-player/src/icons/acoustic-guitar%20(1).png" />
 									</image>
 								</ImageView>
 							</graphic>
 						</Button>
-						<TextField layoutX="535.0" layoutY="5.0" prefHeight="30.0"
-							prefWidth="180.0" AnchorPane.bottomAnchor="10.0"
-							AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="10.0" />
+						<TextField layoutX="535.0" layoutY="5.0" prefHeight="30.0" prefWidth="180.0" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="10.0" />
 					</children>
 				</AnchorPane>
 			</children>
 		</VBox>
 	</top>
 	<left>
-		<BorderPane prefHeight="472.0" prefWidth="232.0"
-			style="-fx-background-color: white;">
+		<BorderPane prefHeight="472.0" prefWidth="232.0" style="-fx-background-color: white;">
 			<top>
-				<VBox prefHeight="106.0" prefWidth="197.0"
-					style="-fx-background-color: white;" BorderPane.alignment="CENTER">
+				<VBox prefHeight="106.0" prefWidth="197.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
 					<children>
 						<Separator prefWidth="200.0" />
-						<Label nodeOrientation="LEFT_TO_RIGHT" text="Library"
-							textFill="#756f6f">
+						<Label nodeOrientation="LEFT_TO_RIGHT" text="Library" textFill="#756f6f">
 							<VBox.margin>
 								<Insets bottom="5.0" left="10.0" top="5.0" />
 							</VBox.margin>
@@ -90,23 +73,17 @@
 								<Font name="System Bold" size="12.0" />
 							</font>
 						</Label>
-						<HBox fx:id="mainListController" alignment="CENTER_LEFT"
-							style="-fx-background-color: #003f7f;">
+						<HBox fx:id="mainListController" alignment="CENTER_LEFT" style="-fx-background-color: #003f7f;">
 							<children>
-								<ImageView fx:id="mainListControllerIcon" fitHeight="32.0"
-									fitWidth="32.0" pickOnBounds="true" preserveRatio="true"
-									HBox.hgrow="ALWAYS">
+								<ImageView fx:id="mainListControllerIcon" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
 									<HBox.margin>
 										<Insets />
 									</HBox.margin>
 									<image>
-										<Image
-											url="file:///D:/Java/WS/music-player/src/icons/ic_music_white.png" />
+										<Image url="file:///D:/Java/WS/music-player/src/icons/ic_music_white.png" />
 									</image>
 								</ImageView>
-								<Text fx:id="mainListControllerText" fill="WHITE"
-									fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0"
-									text="Music">
+								<Text fx:id="mainListControllerText" fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="Music">
 									<HBox.margin>
 										<Insets />
 									</HBox.margin>
@@ -122,8 +99,7 @@
 								<Insets bottom="2.0" left="5.0" top="2.0" />
 							</padding>
 						</HBox>
-						<Label nodeOrientation="LEFT_TO_RIGHT" text="Playlists"
-							textFill="#756f6f">
+						<Label nodeOrientation="LEFT_TO_RIGHT" text="Playlists" textFill="#756f6f">
 							<font>
 								<Font name="System Bold" size="12.0" />
 							</font>
@@ -131,22 +107,17 @@
 								<Insets bottom="5.0" left="10.0" top="12.0" />
 							</VBox.margin>
 						</Label>
-						<HBox fx:id="newPlaylistController" alignment="CENTER_LEFT"
-							style="-fx-background-color: white;" VBox.vgrow="ALWAYS">
+						<HBox fx:id="newPlaylistController" alignment="CENTER_LEFT" style="-fx-background-color: white;" VBox.vgrow="ALWAYS">
 							<children>
-								<ImageView fx:id="newPlaylistControllerIcon"
-									fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
-									preserveRatio="true">
+								<ImageView fx:id="newPlaylistControllerIcon" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
 									<image>
-										<Image
-											url="file:///D:/Java/WS/music-player/src/icons/ic_playlist_add_black.png" />
+										<Image url="file:///D:/Java/WS/music-player/src/icons/ic_playlist_add_black.png" />
 									</image>
 									<HBox.margin>
 										<Insets />
 									</HBox.margin>
 								</ImageView>
-								<Text fx:id="newPlaylistControllerText" strokeType="OUTSIDE"
-									strokeWidth="0.0" text="New Playlist">
+								<Text fx:id="newPlaylistControllerText" strokeType="OUTSIDE" strokeWidth="0.0" text="New Playlist">
 									<font>
 										<Font name="Calibri" size="14.0" />
 									</font>
@@ -163,9 +134,7 @@
 				</VBox>
 			</top>
 			<center>
-				<ListView fx:id="lvPlaylist" fixedCellSize="0.0"
-					prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: white;"
-					BorderPane.alignment="CENTER">
+				<ListView fx:id="lvPlaylist" fixedCellSize="0.0" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: white;" BorderPane.alignment="CENTER">
 					<BorderPane.margin>
 						<Insets />
 					</BorderPane.margin>
@@ -174,20 +143,14 @@
 		</BorderPane>
 	</left>
 	<center>
-		<VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0"
-			BorderPane.alignment="CENTER_LEFT">
+		<VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER_LEFT">
 			<children>
-				<TableView fx:id="tableSongs" fixedCellSize="0.0"
-					pickOnBounds="false" prefHeight="472.0" prefWidth="505.0"
-					tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
+				<TableView fx:id="tableSongs" fixedCellSize="0.0" pickOnBounds="false" prefHeight="472.0" prefWidth="505.0" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
 					<columns>
 						<TableColumn fx:id="tableName" prefWidth="175.0" text="Name" />
-						<TableColumn fx:id="tableTime" minWidth="0.0"
-							prefWidth="79.0" text="Time" />
-						<TableColumn fx:id="tableArtist" prefWidth="78.0"
-							text="Artist" />
-						<TableColumn fx:id="tableAlbum" prefWidth="107.0"
-							text="Album" />
+						<TableColumn fx:id="tableTime" minWidth="0.0" prefWidth="79.0" text="Time" />
+						<TableColumn fx:id="tableArtist" prefWidth="78.0" text="Artist" />
+						<TableColumn fx:id="tableAlbum" prefWidth="107.0" text="Album" />
 						<TableColumn fx:id="tableGenre" prefWidth="86.0" text="Genre" />
 					</columns>
 					<columnResizePolicy>
@@ -198,31 +161,19 @@
 		</VBox>
 	</center>
 	<bottom>
-		<BorderPane fx:id="bottomBar" prefHeight="58.0" prefWidth="761.0"
-			BorderPane.alignment="CENTER">
+		<BorderPane fx:id="bottomBar" prefHeight="66.0" prefWidth="761.0" BorderPane.alignment="CENTER">
 			<left>
-				<BorderPane prefHeight="200.0" prefWidth="240.0"
-					BorderPane.alignment="CENTER">
+				<BorderPane prefHeight="200.0" prefWidth="240.0" BorderPane.alignment="CENTER">
 					<left>
-						<HBox alignment="CENTER" prefHeight="200.0" prefWidth="240.0"
-							BorderPane.alignment="CENTER">
+						<HBox alignment="CENTER" prefHeight="200.0" prefWidth="240.0" BorderPane.alignment="CENTER">
 							<children>
-								<FontAwesomeIconView fx:id="preSongBtn"
-									glyphName="BACKWARD"
-									glyphStyle="-fx-fill: linear-gradient(#70b4e5 0%, #247cbc 70%, #2c85c1 85%)"
-									size="28" />
-								<FontAwesomeIconView fx:id="playSongBtn"
-									glyphName="PLAY"
-									glyphStyle="-fx-fill: linear-gradient(#70b4e5 0%, #247cbc 70%, #2c85c1 85%)"
-									size="28">
+								<FontAwesomeIconView fx:id="preSongBtn" glyphName="BACKWARD" glyphStyle="-fx-fill: linear-gradient(#70b4e5 0%, #247cbc 70%, #2c85c1 85%)" size="28" />
+								<FontAwesomeIconView fx:id="playSongBtn" glyphName="PLAY" glyphStyle="-fx-fill: linear-gradient(#70b4e5 0%, #247cbc 70%, #2c85c1 85%)" size="28">
 									<HBox.margin>
 										<Insets left="20.0" />
 									</HBox.margin>
 								</FontAwesomeIconView>
-								<FontAwesomeIconView fx:id="nextSongBtn"
-									glyphName="FORWARD"
-									glyphStyle="-fx-fill: linear-gradient(#70b4e5 0%, #247cbc 70%, #2c85c1 85%)"
-									size="28">
+								<FontAwesomeIconView fx:id="nextSongBtn" glyphName="FORWARD" glyphStyle="-fx-fill: linear-gradient(#70b4e5 0%, #247cbc 70%, #2c85c1 85%)" size="28">
 									<HBox.margin>
 										<Insets left="20.0" />
 									</HBox.margin>
@@ -233,15 +184,11 @@
 				</BorderPane>
 			</left>
 			<center>
-				<BorderPane prefHeight="58.0" prefWidth="352.0"
-					BorderPane.alignment="CENTER">
+				<BorderPane prefHeight="58.0" prefWidth="352.0" BorderPane.alignment="CENTER">
 					<left>
-						<BorderPane prefHeight="200.0" prefWidth="400.0"
-							BorderPane.alignment="CENTER">
+						<BorderPane prefHeight="200.0" prefWidth="350.0" BorderPane.alignment="CENTER">
 							<left>
-								<ImageView fx:id="imageSong" fitHeight="40.0"
-									fitWidth="40.0" pickOnBounds="true" preserveRatio="true"
-									BorderPane.alignment="CENTER">
+								<ImageView fx:id="imageSong" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
 									<image>
 										<Image url="@../icons/acoustic-guitar.png" />
 									</image>
@@ -251,25 +198,20 @@
 								</ImageView>
 							</left>
 							<center>
-								<VBox alignment="CENTER" prefHeight="200.0" prefWidth="300.0"
-									BorderPane.alignment="CENTER">
+								<VBox alignment="CENTER" prefHeight="200.0" prefWidth="300.0" BorderPane.alignment="CENTER">
 									<children>
 										<Label fx:id="nameSong" text="Label" />
 										<Label fx:id="artistSong" text="Label" textFill="#827c7c" />
-										<Slider fx:id="sliderSong" prefHeight="14.0" prefWidth="292.0" />
+										<Slider fx:id="sliderSong" prefHeight="14.0" prefWidth="200.0" />
 									</children>
 								</VBox>
 							</center>
 						</BorderPane>
 					</left>
 					<center>
-						<VBox alignment="CENTER" prefHeight="200.0" prefWidth="50.0"
-							BorderPane.alignment="CENTER">
+						<VBox alignment="CENTER" prefHeight="200.0" prefWidth="70.0" BorderPane.alignment="CENTER">
 							<children>
-								<FontAwesomeIconView fx:id="randomSong"
-									glyphName="EXCHANGE"
-									glyphStyle="-fx-fill: linear-gradient(#70b4e5 0%, #247cbc 70%, #2c85c1 85%)"
-									size="20" />
+								<FontAwesomeIconView fx:id="randomSong" glyphName="EXCHANGE" glyphStyle="-fx-fill: linear-gradient(#70b4e5 0%, #247cbc 70%, #2c85c1 85%)" size="20" />
 								<Label fx:id="timeSong" text="Label" textFill="#827c7c">
 									<VBox.margin>
 										<Insets top="8.0" />
@@ -279,26 +221,13 @@
 						</VBox>
 					</center>
 					<right>
-						<BorderPane prefHeight="200.0" prefWidth="50.0"
-							BorderPane.alignment="CENTER">
-							<center>
-								<Slider fx:id="volumeSong" orientation="VERTICAL"
-									BorderPane.alignment="CENTER">
-									<BorderPane.margin>
-										<Insets />
-									</BorderPane.margin>
-								</Slider>
-							</center>
-							<bottom>
-								<FontAwesomeIconView fx:id="volumeBtn"
-									glyphName="SORT_UP"
-									glyphStyle="-fx-fill: linear-gradient(#70b4e5 0%, #247cbc 70%, #2c85c1 85%)"
-									BorderPane.alignment="CENTER">
-									<BorderPane.margin>
-										<Insets />
-									</BorderPane.margin>
-								</FontAwesomeIconView>
-							</bottom>
+						<BorderPane prefHeight="200.0" prefWidth="80.0" BorderPane.alignment="CENTER">
+                     <center>
+                        <Slider fx:id="volumeSong" BorderPane.alignment="CENTER">
+                           <BorderPane.margin>
+                              <Insets right="5.0" />
+                           </BorderPane.margin></Slider>
+                     </center>
 						</BorderPane>
 					</right>
 				</BorderPane>

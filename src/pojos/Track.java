@@ -5,7 +5,7 @@ public class Track {
 	private long id;
 	private long size;
 	private long year;
-	private long time;
+	private double time;
 	private String name;
 	private String artist;
 	private String album;
@@ -22,7 +22,7 @@ public class Track {
 		this.location = "";
 	}
 
-	public Track(long id, long size, long year, long time, String name, String artist, String album, String genre,
+	public Track(long id, long size, long year, double time, String name, String artist, String album, String genre,
 			String kind, String location) {
 		this.id = id;
 		this.size = size;
@@ -44,11 +44,17 @@ public class Track {
 		this.name = name;
 	}
 
-	public long getTime() {
-		return time;
+	public double getTimeDouble() {
+		return this.time;
 	}
 
-	public void setTime(long time) {
+	public String getTime() {
+		int min = (int) ((time / 1000) / 60);
+		int sec = (int) ((time / 1000) % 60);
+		return min + ":" + sec + "";
+	}
+
+	public void setTime(double time) {
 		this.time = time;
 	}
 

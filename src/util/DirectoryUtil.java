@@ -71,6 +71,7 @@ public class DirectoryUtil {
 				result.setArtist(metadata.get("xmpDM:artist"));
 				result.setAlbum(metadata.get("xmpDM:album"));
 				result.setGenre(metadata.get("xmpDM:genre"));
+				result.setTime(Double.parseDouble(metadata.get("xmpDM:duration"))); // 323707.03125 Em gai mua
 				result.setLocation(pathFile);
 			}
 		} catch (Exception e) {
