@@ -2,6 +2,7 @@ package application;
 
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 
@@ -19,49 +20,67 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import pojos.Playlist;
 import pojos.Track;
-import util.CustomPlaylist;
 import util.DirectoryUtil;
 import util.ListViewUtil;
 import util.MenuUtil;
 import util.TableViewUtil;
 
 public class MainController implements Initializable {
+	// ===========================Table
+	// Tracks===============================================
 	@FXML
-	private TableView<Track> tableSongs;
+	private TableView<Track> tableTracks;
 	@FXML
-	private TableColumn<Track, String> tableName, tableTime, tableArtist, tableAlbum, tableGenre;
+	private TableColumn<Track, String> tcName, tcTime, tcArtist, tcAlbum, tcGenre, tcYear;
+	// =====================================================================================
 
+	// ===========================Library and Play
+	// list======================================
 	@FXML
-	private VBox controller;
+	private HBox libraryHBox;
 	@FXML
-	private HBox mainListController, newPlaylistController;
+	private ImageView imgLib;
 	@FXML
-	private ImageView mainListControllerIcon, newPlaylistControllerIcon;
+	private FontAwesomeIconView newPlaylist;
 	@FXML
-	private Text mainListControllerText, newPlaylistControllerText;
+	private ListView<Playlist> lvPlaylists;
+	@FXML
+	private Label libraryLabel, nameLib;
+	// =====================================================================================
 
+	// ===========================Player======================================================
 	@FXML
-	private ListView<Playlist> lvPlaylist;
+	private GridPane bottomBar;
+	@FXML
+	private FontAwesomeIconView nextTrack, preTrack, playTrack, optionPlayTrack;
+	@FXML
+	private Label nameTrack, artistTrack, timeUp, timeDown;
+	@FXML
+	private ImageView coverTrack;
+	@FXML
+	private Slider trackSlider, volumeSlider;
+	@FXML
+	private ProgressBar trackProgressBar, volumeProgressBar;
+	// ======================================================================================
+
 	private ObservableList<Playlist> playList;
 	private ObservableList<Track> listSong;
 	private Stage primaryStage = Main.getPrimaryStage();
@@ -69,28 +88,19 @@ public class MainController implements Initializable {
 	private MediaPlayer mMediaPlayer;
 	private DataAccess mData = DataAccess.getInstance();
 
-	// ==========================================================
 	public static final int SONG_DEFAULT = 0;
 	public static final int SONG_REPEAT = SONG_DEFAULT + 1;
 	public static final int SONG_RANDOM = SONG_REPEAT + 1;
 	private int flagTypeNextSong = SONG_DEFAULT;
-	private int flagShowVolumeSlider = 0;
-	
-	@FXML
-	private BorderPane bottomBar;
-	@FXML
-	private FontAwesomeIconView nextSongBtn, preSongBtn, playSongBtn, randomSong, volumeBtn;
-	@FXML
-	private Label nameSong, artistSong, timeSong;
-	@FXML
-	private ImageView imageSong;
-	@FXML
-	private Slider sliderSong, volumeSong;
 	private Duration duration;
+
+	@FXML
+	private TextField tfSearch;
 
 	// =============================================================
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		initPlayer();
 		initMainPLaylist();
 		initTableSong();
 		initListSong();
@@ -98,10 +108,29 @@ public class MainController implements Initializable {
 		initControllSong();
 	}
 
+	private void initPlayer() {
+		double sliderWidth = 510;
+
+		trackSlider.setMin(0);
+		trackSlider.setMax(50);
+		trackSlider.setMinWidth(sliderWidth);
+		trackSlider.setMaxWidth(sliderWidth);
+
+		trackProgressBar.setMinWidth(sliderWidth);
+		trackProgressBar.setMaxWidth(sliderWidth);
+
+		trackSlider.valueProperty().addListener(new ChangeListener<Number>() {
+			public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
+				trackProgressBar.setProgress(new_val.doubleValue() / 50);
+			}
+		});
+
+	}
+
 	public void onAddFiletoLibrary(ActionEvent e) {
-		ObservableList<File> listFile = FXCollections.observableArrayList(DirectoryUtil.readPathFile(primaryStage));
-		if (listFile != null) {
-			ObservableList<Track> listTrack = DirectoryUtil.getInfoSong(listFile);
+		List<File> filesChooser = DirectoryUtil.readFiles(primaryStage);
+		if (filesChooser != null) {
+			ObservableList<Track> listTrack = DirectoryUtil.getInfoSong(filesChooser);
 			for (Track track : listTrack) {
 				if (!mData.isExistFile(track)) {
 					mData.writeData(track);
@@ -124,22 +153,21 @@ public class MainController implements Initializable {
 			mMediaPlayer.setOnReady(new Runnable() {
 				public void run() {
 					duration = mMediaPlayer.getMedia().getDuration();
-					updateTimeSongBar();
+					updatetimeTrackBar();
 				}
 			});
 
-			playSongBtn.setGlyphName("PAUSE");
-			flagShowVolumeSlider = 1;
+			playTrack.setGlyphName("PAUSE");
 
 			mMediaPlayer.setOnEndOfMedia(new Runnable() {
 				public void run() {
 					nextSong();
 				}
 			});
-			int ind = tableSongs.getSelectionModel().getSelectedIndex();
-			Track track = tableSongs.getItems().get(ind);
-			nameSong.setText(track.getName().toString());
-			artistSong.setText(track.getArtist().toString());
+			int index = tableTracks.getSelectionModel().getSelectedIndex();
+			Track track = tableTracks.getItems().get(index);
+			nameTrack.setText(track.getName().toString());
+			artistTrack.setText(track.getArtist().toString());
 			// set image album file mp3
 			// imageSong.setImage(track.setImgAlbumCover(new
 			// Image("/icons/ic_music_black.png")));
@@ -148,45 +176,46 @@ public class MainController implements Initializable {
 				@Override
 				public void changed(ObservableValue<? extends Duration> observable, Duration oldValue,
 						Duration newValue) {
-					updateTimeSongBar();
+					updatetimeTrackBar();
 				}
 			});
-			sliderSong.valueProperty().addListener(new InvalidationListener() {
+
+			trackSlider.valueProperty().addListener(new InvalidationListener() {
 				public void invalidated(Observable ov) {
-					if (sliderSong.isValueChanging()) {
+					if (trackSlider.isValueChanging()) {
 						// multiply duration by percentage calculated by slider position
 						if (duration != null) {
-							mMediaPlayer.seek(duration.multiply(sliderSong.getValue() / 100.0));
+							mMediaPlayer.seek(duration.multiply(trackSlider.getValue() / 100.0));
 						}
-						updateTimeSongBar();
+						updatetimeTrackBar();
 					}
 				}
 			});
 
-			volumeSong.valueProperty().addListener(new InvalidationListener() {
+			volumeSlider.valueProperty().addListener(new InvalidationListener() {
 				public void invalidated(Observable ov) {
-					if (volumeSong.isValueChanging()) {
-						mMediaPlayer.setVolume(volumeSong.getValue() / 100.0);
+					if (volumeSlider.isValueChanging()) {
+						mMediaPlayer.setVolume(volumeSlider.getValue() / 100.0);
 					}
 				}
 			});
 		}
 	}
 
-	protected void updateTimeSongBar() {
-		if (timeSong != null && sliderSong != null && volumeSong != null && duration != null) {
+	protected void updatetimeTrackBar() {
+		if (timeUp != null && trackSlider != null && volumeSlider != null && duration != null) {
 			Platform.runLater(new Runnable() {
 				@SuppressWarnings("deprecation")
 				public void run() {
 					Duration currentTime = mMediaPlayer.getCurrentTime();
-					timeSong.setText(formatTime(currentTime, duration));
-					sliderSong.setDisable(duration.isUnknown());
-					if (!sliderSong.isDisabled() && duration.greaterThan(Duration.ZERO)
-							&& !sliderSong.isValueChanging()) {
-						sliderSong.setValue(currentTime.divide(duration).toMillis() * 100.0);
+					timeUp.setText(formatTime(currentTime, duration));
+					trackSlider.setDisable(duration.isUnknown());
+					if (!trackSlider.isDisabled() && duration.greaterThan(Duration.ZERO)
+							&& !trackSlider.isValueChanging()) {
+						trackSlider.setValue(currentTime.divide(duration).toMillis() * 100.0);
 					}
-					if (!volumeSong.isValueChanging()) {
-						volumeSong.setValue((int) Math.round(mMediaPlayer.getVolume() * 100));
+					if (!volumeSlider.isValueChanging()) {
+						volumeSlider.setValue((int) Math.round(mMediaPlayer.getVolume() * 100));
 					}
 				}
 			});
@@ -228,11 +257,11 @@ public class MainController implements Initializable {
 	}
 
 	private void nextSong() {
-		int idx = tableSongs.getSelectionModel().getSelectedIndex();
+		int idx = tableTracks.getSelectionModel().getSelectedIndex();
 		Track track = null;
 		switch (flagTypeNextSong) {
 		case SONG_REPEAT:
-			track = tableSongs.getItems().get(idx);
+			track = tableTracks.getItems().get(idx);
 			if (track != null) {
 				playSong(track);
 			}
@@ -240,8 +269,8 @@ public class MainController implements Initializable {
 		case SONG_RANDOM:
 			Random rd = new Random();
 			idx = rd.nextInt(listSong.size() - 1);
-			tableSongs.getSelectionModel().clearAndSelect(idx);
-			track = tableSongs.getItems().get(idx);
+			tableTracks.getSelectionModel().clearAndSelect(idx);
+			track = tableTracks.getItems().get(idx);
 			if (track != null) {
 				playSong(track);
 			}
@@ -250,8 +279,8 @@ public class MainController implements Initializable {
 			if (listSong.size() == idx + 1) {
 				idx = -1;
 			}
-			tableSongs.getSelectionModel().clearAndSelect(idx + 1);
-			track = tableSongs.getItems().get(idx + 1);
+			tableTracks.getSelectionModel().clearAndSelect(idx + 1);
+			track = tableTracks.getItems().get(idx + 1);
 			if (track != null) {
 				playSong(track);
 			}
@@ -260,42 +289,43 @@ public class MainController implements Initializable {
 	}
 
 	private void previousSong() {
-		int idx = tableSongs.getSelectionModel().getSelectedIndex();
+		int idx = tableTracks.getSelectionModel().getSelectedIndex();
 		if (idx == 0) {
 			idx = listSong.size();
 		}
-		tableSongs.getSelectionModel().clearAndSelect(idx - 1);
-		Track track = tableSongs.getItems().get(idx - 1);
+		tableTracks.getSelectionModel().clearAndSelect(idx - 1);
+		Track track = tableTracks.getItems().get(idx - 1);
 		if (track != null) {
 			playSong(track);
 		}
 	}
 
 	private void initTableSong() {
-		tableName.setCellValueFactory(new PropertyValueFactory<Track, String>("Name"));
-		tableTime.setCellValueFactory(new PropertyValueFactory<Track, String>("Time"));
-		tableArtist.setCellValueFactory(new PropertyValueFactory<Track, String>("Artist"));
-		tableAlbum.setCellValueFactory(new PropertyValueFactory<Track, String>("Album"));
-		tableGenre.setCellValueFactory(new PropertyValueFactory<Track, String>("Genre"));
-		tableSongs.setPlaceholder(TableViewUtil.createPlaceHolder());
-		tableSongs.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		tcName.setCellValueFactory(new PropertyValueFactory<Track, String>("name"));
+		tcTime.setCellValueFactory(new PropertyValueFactory<Track, String>("time"));
+		tcArtist.setCellValueFactory(new PropertyValueFactory<Track, String>("artist"));
+		tcAlbum.setCellValueFactory(new PropertyValueFactory<Track, String>("album"));
+		tcGenre.setCellValueFactory(new PropertyValueFactory<Track, String>("genre"));
+
+		tableTracks.setPlaceholder(TableViewUtil.createPlaceHolder());
+		tableTracks.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 	}
 
 	private void initListSong() {
 		// Read from file
 		listSong = mData.readData();
-		tableSongs.setItems(listSong);
-		
+		tableTracks.setItems(listSong);
+
 		// Double click to play this song
-		tableSongs.setRowFactory(tv -> {
+		tableTracks.setRowFactory(tv -> {
 			TableRow<Track> row = new TableRow<>();
 			row.setOnMouseClicked(e -> {
 				Track track = row.getItem();
 				if (e.getClickCount() == 2 && !row.isEmpty()) {
 					bottomBar.setVisible(true);
 					bottomBar.setManaged(true);
-					volumeSong.setVisible(false);
-					volumeSong.setManaged(false);
+					volumeSlider.setVisible(false);
+					volumeSlider.setManaged(false);
 					if (track != null) {
 						playSong(track);
 					}
@@ -310,66 +340,51 @@ public class MainController implements Initializable {
 
 	private void initAllNewPlaylist() {
 		playList = FXCollections.observableArrayList();
-		ListViewUtil.updateItems(lvPlaylist);
-		lvPlaylist.setItems(playList);
-		lvPlaylist.setOnMouseClicked(v -> {
-			setSelectedMainList(false);
-			// Playlist item = lvPlaylist.getSelectionModel().getSelectedItem();
+		ListViewUtil.updateItems(lvPlaylists);
+		lvPlaylists.setItems(playList);
+
+		lvPlaylists.setOnMouseClicked(v -> {
+			// setSelectedMainList(false);
+			// Playlist item = lvPlaylists.getSelectionModel().getSelectedItem();
 		});
 
 	}
 
 	private void initMainPLaylist() {
-		mainListController.setOnMouseClicked(v -> {
-			setSelectedMainList(true);
-			lvPlaylist.getSelectionModel().clearSelection();
-		});
-		mainListController.setOnMouseReleased(v -> setSelectedMainList(false));
-		newPlaylistController.setOnMousePressed(v -> {
-
-			setSelectedMainList(false);
-			setSelectedNewPlaylist(true);
-
-			playList.add(CustomPlaylist.createNewPlaylist(playList));
-			lvPlaylist.getSelectionModel().select(playList.size() - 1);
-			lvPlaylist.getFocusModel().focus(playList.size() - 1);
-			lvPlaylist.scrollTo(playList.size() - 1);
-		});
-		newPlaylistController.setOnMouseReleased(v -> setSelectedNewPlaylist(false));
+		// newPlaylistController.setOnMousePressed(v -> {
+		//
+		// setSelectedMainList(false);
+		// setSelectedNewPlaylist(true);
+		//
+		// playList.add(CustomPlaylist.createNewPlaylist(playList));
+		// lvPlaylists.getSelectionModel().select(playList.size() - 1);
+		// lvPlaylists.getFocusModel().focus(playList.size() - 1);
+		// lvPlaylists.scrollTo(playList.size() - 1);
+		// });
+		// newPlaylistController.setOnMouseReleased(v -> setSelectedNewPlaylist(false));
 	}
 
 	private void initControllSong() {
 		bottomBar.setVisible(false);
 		bottomBar.setManaged(false);
 
-		nextSongBtn.setOnMouseClicked(v -> {
+		nextTrack.setOnMouseClicked(v -> {
 			nextSong();
 		});
-		preSongBtn.setOnMouseClicked(v -> {
+		preTrack.setOnMouseClicked(v -> {
 			previousSong();
 		});
-		playSongBtn.setOnMouseClicked(v -> {
+		playTrack.setOnMouseClicked(v -> {
 			if (mMediaPlayer.getStatus().equals(Status.PLAYING)) {
-				playSongBtn.setGlyphName("PLAY");
+				playTrack.setGlyphName("PLAY");
 				mMediaPlayer.pause();
 			} else if (mMediaPlayer.getStatus().equals(Status.PAUSED)) {
-				playSongBtn.setGlyphName("PAUSE");
+				playTrack.setGlyphName("PAUSE");
 				mMediaPlayer.play();
 			}
 		});
-		volumeBtn.setOnMouseClicked(v -> {
-			if (flagShowVolumeSlider == 1) {
-				volumeSong.setVisible(true);
-				volumeSong.setManaged(true);
-				flagShowVolumeSlider = 1;
-			} else {
-				volumeSong.setVisible(false);
-				volumeSong.setManaged(false);
-				flagShowVolumeSlider = 0;
-			}
 
-		});
-		randomSong.setOnMouseClicked(v -> {
+		optionPlayTrack.setOnMouseClicked(v -> {
 			if (flagTypeNextSong == SONG_RANDOM) {
 				flagTypeNextSong = SONG_DEFAULT;
 			} else {
@@ -378,41 +393,16 @@ public class MainController implements Initializable {
 
 			switch (flagTypeNextSong) {
 			case SONG_REPEAT:
-				randomSong.setGlyphName("REPEAT");
+				optionPlayTrack.setGlyphName("REPEAT");
 				break;
 			case SONG_RANDOM:
-				randomSong.setGlyphName("RANDOM");
+				optionPlayTrack.setGlyphName("RANDOM");
 				break;
 			default:
-				randomSong.setGlyphName("EXCHANGE");
+				optionPlayTrack.setGlyphName("EXCHANGE");
 				break;
 			}
 		});
 
 	}
-
-	private void setSelectedNewPlaylist(boolean isSelected) {
-		if (isSelected) {
-			newPlaylistController.setStyle("-fx-background-color:#003f7f");
-			newPlaylistControllerIcon.setImage(new Image("/icons/ic_playlist_add_white.png"));
-			newPlaylistControllerText.setFill(Color.WHITE);
-		} else {
-			newPlaylistController.setStyle("-fx-background-color:white");
-			newPlaylistControllerIcon.setImage(new Image("/icons/ic_playlist_add_black.png"));
-			newPlaylistControllerText.setFill(Color.BLACK);
-		}
-	}
-
-	private void setSelectedMainList(boolean isSelected) {
-		if (isSelected) {
-			mainListController.setStyle("-fx-background-color:#003f7f");
-			mainListControllerIcon.setImage(new Image("/icons/ic_music_white.png"));
-			mainListControllerText.setFill(Color.WHITE);
-		} else {
-			mainListController.setStyle("-fx-background-color:white");
-			mainListControllerIcon.setImage(new Image("/icons/ic_music_black.png"));
-			mainListControllerText.setFill(Color.BLACK);
-		}
-	}
-
 }

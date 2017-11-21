@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+<?import de.jensd.fx.glyphs.fontawesome.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<GridPane fx:id="playerGridPane" minHeight="90.0" prefHeight="90.0"
+	prefWidth="1200.0" stylesheets="@../css/player.css" xmlns="http://javafx.com/javafx/8"
+	xmlns:fx="http://javafx.com/fxml/1">
+	<columnConstraints>
+		<ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0"
+			minWidth="10.0" prefWidth="300.0" />
+		<ColumnConstraints hgrow="SOMETIMES" maxWidth="900.0"
+			minWidth="10.0" prefWidth="600.0" />
+		<ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0"
+			minWidth="10.0" prefWidth="300.0" />
+	</columnConstraints>
+	<rowConstraints>
+		<RowConstraints minHeight="10.0" prefHeight="30.0"
+			vgrow="SOMETIMES" />
+	</rowConstraints>
+	<children>
+		<HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0"
+			spacing="40.0">
+			<children>
+				<FontAwesomeIconView fx:id="preTrack" glyphName="BACKWARD"
+					size="36">
+				</FontAwesomeIconView>
+				<FontAwesomeIconView fx:id="playTrack"
+					glyphName="PLAY" size="36">
+				</FontAwesomeIconView>
+				<FontAwesomeIconView fx:id="nextTrack"
+					glyphName="FORWARD" size="36">
+				</FontAwesomeIconView>
+			</children>
+		</HBox>
+		<HBox GridPane.columnIndex="1">
+			<children>
+				<ImageView fx:id="coverTrack" fitHeight="90.0" fitWidth="90.0"
+					pickOnBounds="true" preserveRatio="true" />
+				<StackPane>
+					<children>
+						<VBox prefWidth="540.0">
+							<children>
+								<BorderPane minHeight="80.0" minWidth="-Infinity"
+									prefHeight="80.0" prefWidth="510.0">
+									<left>
+										<VBox alignment="CENTER" prefHeight="58.0" prefWidth="60.0">
+											<children>
+												<FontAwesomeIconView fx:id="optionPlayTrack"
+													glyphName="RANDOM"
+													glyphStyle="-fx-fill: linear-gradient(#70b4e5 0%, #247cbc 70%, #2c85c1 85%)"
+													size="24" />
+												<Label fx:id="timeUp" text="1:35" />
+											</children>
+										</VBox>
+									</left>
+									<center>
+										<VBox alignment="CENTER">
+											<children>
+												<Label fx:id="nameTrack" text="Someone like you"
+													textAlignment="CENTER">
+													<font>
+														<Font name="System Bold" size="14.0" />
+													</font>
+												</Label>
+												<Label fx:id="artistTrack" alignment="CENTER"
+													prefWidth="390.0" text="Adele - Adele - Adele - Adele "
+													BorderPane.alignment="CENTER">
+													<font>
+														<Font size="14.0" />
+													</font>
+													<BorderPane.margin>
+														<Insets top="20.0" />
+													</BorderPane.margin>
+												</Label>
+											</children>
+										</VBox>
+									</center>
+									<right>
+										<Label fx:id="timeDown" alignment="CENTER" prefHeight="17.0"
+											prefWidth="60.0" text="3:25" BorderPane.alignment="CENTER">
+											<BorderPane.margin>
+												<Insets top="20.0" />
+											</BorderPane.margin>
+										</Label>
+									</right>
+								</BorderPane>
+								<StackPane minHeight="5.0" prefWidth="200.0">
+									<children>
+										<ProgressBar fx:id="trackProgressBar" minHeight="4.0"
+											minWidth="510.0" prefHeight="6.0" prefWidth="200.0" progress="0.48">
+											<StackPane.margin>
+												<Insets bottom="-10.0" />
+											</StackPane.margin>
+										</ProgressBar>
+										<Slider fx:id="trackSlider" disable="true" minHeight="8.0"
+											prefHeight="10.0">
+											<StackPane.margin>
+												<Insets bottom="-9.0" />
+											</StackPane.margin>
+										</Slider>
+									</children>
+								</StackPane>
+							</children>
+						</VBox>
+					</children>
+				</StackPane>
+			</children>
+		</HBox>
+		<StackPane prefHeight="150.0" prefWidth="200.0"
+			GridPane.columnIndex="2">
+			<children>
+				<ProgressBar fx:id="volumeProgressBar" maxHeight="-Infinity"
+					maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+					prefHeight="10.0" prefWidth="200.0" progress="0.62" />
+				<Slider fx:id="volumeSlider" maxWidth="-Infinity" minHeight="-Infinity"
+					minWidth="-Infinity" prefWidth="210.0" />
+			</children>
+		</StackPane>
+	</children>
+</GridPane>

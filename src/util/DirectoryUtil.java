@@ -22,7 +22,8 @@ import pojos.Track;
 
 public class DirectoryUtil {
 
-	public static List<File> readPathFile(Stage stage) {
+	public static List<File> readFiles(Stage stage) {
+		List<File> list;
 		FileChooser fc = new FileChooser();
 
 		ExtensionFilter mp3Filter = new FileChooser.ExtensionFilter("MP3 files", "*.mp3");
@@ -30,11 +31,11 @@ public class DirectoryUtil {
 		ExtensionFilter wmaFilter = new FileChooser.ExtensionFilter("WMA files", "*.wma");
 
 		fc.getExtensionFilters().addAll(mp3Filter, wavFilter, wmaFilter);
-		List<File> list = fc.showOpenMultipleDialog(stage);
+		list = fc.showOpenMultipleDialog(stage);
 		return list;
 	}
 
-	public static ObservableList<Track> getInfoSong(ObservableList<File> listFile) {
+	public static ObservableList<Track> getInfoSong(List<File> listFile) {
 		ObservableList<Track> result = FXCollections.observableArrayList();
 		for (File file : listFile) {
 			Track track = getInfoSong(file.toURI().toString());

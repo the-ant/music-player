@@ -1,13 +1,23 @@
 package pojos;
 
+import javafx.collections.ObservableList;
+
 public class Playlist {
 	private String name;
 	private String fullName;
 	private String pathIcon;
 	private int id;
+	private ObservableList<Playlist> listPlaylist;
 
 	public Playlist() {
+		initPLaylist();
 	}
+
+	private void initPLaylist() {
+		//library: name, key[]
+		
+	}
+	
 
 	public Playlist(String fullName, String pathIcon) {
 		this.setFullName(fullName);
