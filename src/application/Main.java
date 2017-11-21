@@ -24,7 +24,6 @@ public class Main extends Application {
 			Parent root = FXMLLoader.load(getClass().getResource("/view/MainLayout.fxml"));
 			primaryStage.setTitle("Music Player");
 			Scene scene = new Scene(root);
-			scene.getStylesheets().add("/application/application.css");
 			primaryStage.setScene(scene);
 			primaryStage.show();
 			

@@ -109,22 +109,6 @@ public class MainController implements Initializable {
 	}
 
 	private void initPlayer() {
-		double sliderWidth = 510;
-
-		trackSlider.setMin(0);
-		trackSlider.setMax(50);
-		trackSlider.setMinWidth(sliderWidth);
-		trackSlider.setMaxWidth(sliderWidth);
-
-		trackProgressBar.setMinWidth(sliderWidth);
-		trackProgressBar.setMaxWidth(sliderWidth);
-
-		trackSlider.valueProperty().addListener(new ChangeListener<Number>() {
-			public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
-				trackProgressBar.setProgress(new_val.doubleValue() / 50);
-			}
-		});
-
 	}
 
 	public void onAddFiletoLibrary(ActionEvent e) {
@@ -196,6 +180,7 @@ public class MainController implements Initializable {
 				public void invalidated(Observable ov) {
 					if (volumeSlider.isValueChanging()) {
 						mMediaPlayer.setVolume(volumeSlider.getValue() / 100.0);
+						volumeProgressBar.setProgress(volumeSlider.getValue()/volumeSlider.getMax());
 					}
 				}
 			});
@@ -213,9 +198,11 @@ public class MainController implements Initializable {
 					if (!trackSlider.isDisabled() && duration.greaterThan(Duration.ZERO)
 							&& !trackSlider.isValueChanging()) {
 						trackSlider.setValue(currentTime.divide(duration).toMillis() * 100.0);
+						trackProgressBar.setProgress(trackSlider.getValue()/trackSlider.getMax());
 					}
 					if (!volumeSlider.isValueChanging()) {
 						volumeSlider.setValue((int) Math.round(mMediaPlayer.getVolume() * 100));
+						volumeProgressBar.setProgress(volumeSlider.getValue()/volumeSlider.getMax());
 					}
 				}
 			});
@@ -324,8 +311,6 @@ public class MainController implements Initializable {
 				if (e.getClickCount() == 2 && !row.isEmpty()) {
 					bottomBar.setVisible(true);
 					bottomBar.setManaged(true);
-					volumeSlider.setVisible(false);
-					volumeSlider.setManaged(false);
 					if (track != null) {
 						playSong(track);
 					}
