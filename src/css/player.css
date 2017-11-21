@@ -16,10 +16,10 @@
 	-fx-background-radius: null;
 }
 
-/*#trackProgressBar .track {
+#trackProgressBar .track {
 	-fx-control-inner-background: null;
 	-fx-background-radius: null;
-}*/
+}
 
 /*#volumeSlider .track {
     -fx-background-color: null;
