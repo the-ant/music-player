@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
+import java.util.concurrent.ForkJoinPool;
 
 import data.DataAccess;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -14,6 +15,7 @@ import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -29,6 +31,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.media.Media;
@@ -52,8 +56,8 @@ public class MainController implements Initializable {
 	private TableColumn<Track, String> tcName, tcTime, tcArtist, tcAlbum, tcGenre, tcYear;
 	// =====================================================================================
 
-	// ===========================Library and Play
-	// list======================================
+	// ===========================Library and play
+	// lists======================================
 	@FXML
 	private HBox libraryHBox;
 	@FXML
@@ -64,6 +68,8 @@ public class MainController implements Initializable {
 	private ListView<Playlist> lvPlaylists;
 	@FXML
 	private Label libraryLabel, nameLib;
+
+	ForkJoinPool forkJoinPool = new ForkJoinPool(4);
 	// =====================================================================================
 
 	// ===========================Player======================================================
@@ -100,24 +106,21 @@ public class MainController implements Initializable {
 	// =============================================================
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		initPlayer();
 		initMainPLaylist();
 		initTableSong();
 		initListSong();
 		initAllNewPlaylist();
 		initControllSong();
-	}
 
-	private void initPlayer() {
 	}
 
 	public void onAddFiletoLibrary(ActionEvent e) {
 		List<File> filesChooser = DirectoryUtil.readFiles(primaryStage);
 		if (filesChooser != null) {
-			ObservableList<Track> listTrack = DirectoryUtil.getInfoSong(filesChooser);
+			ObservableList<Track> listTrack = DirectoryUtil.getMetadataTracks(filesChooser);
 			for (Track track : listTrack) {
 				if (!mData.isExistFile(track)) {
-					mData.writeData(track);
+					mData.writeTrack(track);
 					listSong.add(track);
 				}
 			}
@@ -180,7 +183,7 @@ public class MainController implements Initializable {
 				public void invalidated(Observable ov) {
 					if (volumeSlider.isValueChanging()) {
 						mMediaPlayer.setVolume(volumeSlider.getValue() / 100.0);
-						volumeProgressBar.setProgress(volumeSlider.getValue()/volumeSlider.getMax());
+						volumeProgressBar.setProgress(volumeSlider.getValue() / volumeSlider.getMax());
 					}
 				}
 			});
@@ -198,11 +201,11 @@ public class MainController implements Initializable {
 					if (!trackSlider.isDisabled() && duration.greaterThan(Duration.ZERO)
 							&& !trackSlider.isValueChanging()) {
 						trackSlider.setValue(currentTime.divide(duration).toMillis() * 100.0);
-						trackProgressBar.setProgress(trackSlider.getValue()/trackSlider.getMax());
+						trackProgressBar.setProgress(trackSlider.getValue() / trackSlider.getMax());
 					}
 					if (!volumeSlider.isValueChanging()) {
 						volumeSlider.setValue((int) Math.round(mMediaPlayer.getVolume() * 100));
-						volumeProgressBar.setProgress(volumeSlider.getValue()/volumeSlider.getMax());
+						volumeProgressBar.setProgress(volumeSlider.getValue() / volumeSlider.getMax());
 					}
 				}
 			});
@@ -210,7 +213,6 @@ public class MainController implements Initializable {
 	}
 
 	private static String formatTime(Duration elapsed, Duration duration) {
-		// hang cop
 		int intElapsed = (int) Math.floor(elapsed.toSeconds());
 		int elapsedHours = intElapsed / (60 * 60);
 		if (elapsedHours > 0) {
@@ -306,6 +308,25 @@ public class MainController implements Initializable {
 		// Double click to play this song
 		tableTracks.setRowFactory(tv -> {
 			TableRow<Track> row = new TableRow<>();
+			row.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
+				if (!row.isEmpty()) {
+					if (e.getClickCount() == 2) {
+						Track track = row.getItem();
+						bottomBar.setVisible(true);
+						bottomBar.setManaged(true);
+						if (track != null) {
+							playSong(track);
+						}
+					} else if(e.isSecondaryButtonDown()) {
+						ObservableList<Track> listDetele = tableTracks.getSelectionModel().getSelectedItems();
+						for (Track track : listDetele) {
+							System.out.println(track.getName());
+						}
+						MenuUtil.createContextMenuForTableRow(mData, listDetele, listSong, row);
+					}
+				}
+			});
+
 			row.setOnMouseClicked(e -> {
 				Track track = row.getItem();
 				if (e.getClickCount() == 2 && !row.isEmpty()) {
@@ -314,9 +335,6 @@ public class MainController implements Initializable {
 					if (track != null) {
 						playSong(track);
 					}
-				}
-				if (!row.isEmpty()) {
-					MenuUtil.createContextMenuForTableRow(mData, row, track, listSong);
 				}
 			});
 			return row;

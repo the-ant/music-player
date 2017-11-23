@@ -11,10 +11,10 @@ import pojos.Track;
 
 public class MenuUtil {
 
-	public static void createContextMenuForTableRow(DataAccess dataAccess, TableRow<Track> row, Track track,
-			ObservableList<Track> listSong) {
+	public static void createContextMenuForTableRow(DataAccess dataAccess, ObservableList<Track> listDetele,
+			ObservableList<Track> listSong, TableRow<Track> row) {
 		ContextMenu contextMenu = new ContextMenu();
-	    
+
 		MenuItem delete = new MenuItem();
 		Label lblDelete = new Label("Delete");
 		lblDelete.setPrefWidth(200);
@@ -23,11 +23,14 @@ public class MenuUtil {
 		delete.setGraphic(lblDelete);
 		
 		delete.setOnAction(e -> {
-			dataAccess.deleteTrack(track);
-			listSong.remove(track);
+			for (Track track : listDetele) {
+				System.out.println(track.getName());
+				dataAccess.deleteTrack(track);
+				listSong.remove(track);
+			}
 		});
 
 		contextMenu.getItems().add(delete);
-		row.setContextMenu(contextMenu);
+		contextMenu.show(row, row.getScaleX(), row.getScaleY());
 	}
 }

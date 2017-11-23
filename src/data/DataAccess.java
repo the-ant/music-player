@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.List;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -42,10 +43,6 @@ public class DataAccess {
 		return DataAccessHelper.INSTANCE;
 	}
 
-	public void writeData(ObservableList<Track> listSong) {
-
-	}
-
 	public void replaceData() {
 
 	}
@@ -66,6 +63,12 @@ public class DataAccess {
 		}
 	}
 
+	public void deleteTracks(List<Track> tracks) {
+		for (Track track : tracks) {
+			deleteTrack(track);
+		}
+	}
+
 	public ObservableList<Track> readData() {
 		ObservableList<Track> result = FXCollections.observableArrayList();
 		JSONObject obj = parseJSONObject();
@@ -77,16 +80,17 @@ public class DataAccess {
 
 				long id = (long) element.get("id");
 				long size = (long) element.get("size");
-				long year = (long) element.get("year");
-				long time = (long) element.get("total time");
+				double time = (Double) element.get("total_time");
+				
+				String year = (String) element.get("year");
 				String artist = (String) element.get("artist");
 				String album = (String) element.get("album");
 				String name = (String) element.get("name");
-				String kind = (String) element.get("kind");
+				String encoding = (String) element.get("kind");
 				String genre = (String) element.get("genre");
 				String location = (String) element.get("location");
 
-				track = new Track(id, size, year, time, name, artist, album, genre, kind, location);
+				track = new Track(id, size, year, time, name, artist, album, genre, encoding, location);
 				result.add(track);
 			}
 		}
@@ -110,7 +114,7 @@ public class DataAccess {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void writeData(Track track) {
+	public void writeTrack(Track track) {
 		JSONObject obj = parseJSONObject();
 		if (obj != null) {
 			JSONArray tracks = (JSONArray) obj.get(TRACKS);
@@ -120,6 +124,12 @@ public class DataAccess {
 			obj.put(TRACKS, tracks);
 			obj.put(COUNTER, ++counter);
 			writeJSONToFile(obj);
+		}
+	}
+	
+	public void writeTracks(List<Track> tracks) {
+		for (Track track : tracks) {
+			writeTrack(track);
 		}
 	}
 
@@ -132,9 +142,9 @@ public class DataAccess {
 		item.put("artist", song.getArtist());
 		item.put("album", song.getAlbum());
 		item.put("genre", song.getGenre());
-		item.put("kind", song.getKind());
+		item.put("kind", song.getEncoding());
 		item.put("size", song.getSize());
-		item.put("total time", song.getTime());
+		item.put("total_time", song.getTime());
 		item.put("year", song.getYear());
 		item.put("location", song.getLocation());
 		return item;
@@ -148,6 +158,7 @@ public class DataAccess {
 					new InputStreamReader(new FileInputStream(new File(getPathFileLibData())), "UTF8"));
 			Object obj = parser.parse(in);
 			jObject = (JSONObject) obj;
+			in.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -190,6 +201,7 @@ public class DataAccess {
 			writer = new BufferedWriter(
 					new OutputStreamWriter(new FileOutputStream(new File(getPathFileLibData())), "UTF8"));
 			writer.write(obj.toJSONString());
+			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {

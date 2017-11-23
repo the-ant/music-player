@@ -12,7 +12,7 @@ public class TableViewUtil {
 	public static VBox createPlaceHolder() {
 		VBox placeHolder = new VBox();
 		
-		placeHolder.getChildren().add(new ImageView(new Image("/icons/playlist.png")));
+		placeHolder.getChildren().add(new ImageView(new Image("/images/img_playlist.png")));
 		
 		Label txtPlaceHolder = new Label("Press Ctrl + O to add items");
 		txtPlaceHolder.setFont(new Font("System", 18));

@@ -1,39 +1,43 @@
 package pojos;
 
+import java.util.Optional;
+
 public class Track {
 
 	private long id;
 	private long size;
-	private long year;
-	private long time;
+	private String year;
 	private String name;
 	private String artist;
 	private String album;
 	private String genre;
-	private String kind;
 	private String location;
+	private String encoding = "";
+	private Optional<byte[]> coverImage;
+	private double time;
 
 	public Track() {
 		this.name = "";
 		this.artist = "";
 		this.album = "";
 		this.genre = "";
-		this.kind = "";
 		this.location = "";
+		this.year = "";
+		this.encoding = "";
 	}
 
-	public Track(long id, long size, long year, long time, String name, String artist, String album, String genre,
-			String kind, String location) {
-		this.id = id;
-		this.size = size;
-		this.year = year;
-		this.time = time;
-		this.name = name;
-		this.artist = artist;
-		this.album = album;
-		this.genre = genre;
-		this.kind = kind;
-		this.location = location;
+	public Track(long id, long size, String year, double time, String name, String artist, String album,
+			String genre, String encoding, String location) {
+		this.setId(id);
+		this.setAlbum(album);
+		this.setSize(size);
+		this.setName(name);
+		this.setYear(year);
+		this.setTime(time);
+		this.setArtist(artist);
+		this.setGenre(genre);
+		this.setEncoding(encoding);
+		this.setLocation(location);
 	}
 
 	public String getName() {
@@ -44,11 +48,11 @@ public class Track {
 		this.name = name;
 	}
 
-	public long getTime() {
+	public double getTime() {
 		return time;
 	}
 
-	public void setTime(long time) {
+	public void setTime(double time) {
 		this.time = time;
 	}
 
@@ -80,15 +84,11 @@ public class Track {
 		return id;
 	}
 
-	public String getKind() {
-		return kind;
-	}
-
 	public long getSize() {
 		return size;
 	}
 
-	public long getYear() {
+	public String getYear() {
 		return year;
 	}
 
@@ -100,20 +100,32 @@ public class Track {
 		this.id = id;
 	}
 
-	public void setKind(String kind) {
-		this.kind = kind;
+	public void setSize(long l) {
+		this.size = l;
 	}
 
-	public void setSize(int size) {
-		this.size = size;
-	}
-
-	public void setYear(int year) {
+	public void setYear(String year) {
 		this.year = year;
 	}
 
 	public void setLocation(String location) {
 		this.location = location;
+	}
+
+	public Optional<byte[]> getCoverImage() {
+		return coverImage;
+	}
+
+	public void setCoverImage(Optional<byte[]> coverImage) {
+		this.coverImage = coverImage;
+	}
+
+	public String getEncoding() {
+		return encoding;
+	}
+
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
 	}
 
 }

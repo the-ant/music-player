@@ -1,18 +1,12 @@
 package util;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.Parser;
-import org.apache.tika.parser.mp3.Mp3Parser;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.helpers.DefaultHandler;
-
+import org.apache.commons.io.FilenameUtils;
+import data.MetadataParser;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.stage.FileChooser;
@@ -22,60 +16,45 @@ import pojos.Track;
 
 public class DirectoryUtil {
 
-	public static List<File> readFiles(Stage stage) {
-		List<File> list;
-		FileChooser fc = new FileChooser();
+	private static List<String> validFiles = new ArrayList<>(Arrays.asList("mp3", "m4a", "wma", "wav"));
 
-		ExtensionFilter mp3Filter = new FileChooser.ExtensionFilter("MP3 files", "*.mp3");
-		ExtensionFilter wavFilter = new FileChooser.ExtensionFilter("WAV files", "*.wav");
-		ExtensionFilter wmaFilter = new FileChooser.ExtensionFilter("WMA files", "*.wma");
-
-		fc.getExtensionFilters().addAll(mp3Filter, wavFilter, wmaFilter);
-		list = fc.showOpenMultipleDialog(stage);
-		return list;
-	}
-
-	public static ObservableList<Track> getInfoSong(List<File> listFile) {
-		ObservableList<Track> result = FXCollections.observableArrayList();
-		for (File file : listFile) {
-			Track track = getInfoSong(file.toURI().toString());
-			if (track != null) {
-				result.add(track);
+	private static List<File> filterFiles(List<File> list) {
+		List<File> result = null;
+		if (list != null) {
+			result = new ArrayList<>();
+			for (int i = 0; i < list.size(); i++) {
+				String ext = FilenameUtils.getExtension(list.get(i).getName());
+				if (validFiles.contains(ext)) {
+					result.add(list.get(i));
+				}
 			}
+
 		}
 		return result;
 	}
 
-	public static Track getInfoSong(String pathFile) {
-		Track result = null;
-		try {
-			File file = new File(new URI(pathFile));
-			String kind = pathFile.substring(pathFile.length() - 3);
+	public static List<File> readFiles(Stage stage) {
+		List<File> list;
+		FileChooser fc = new FileChooser();
 
-			InputStream in = new FileInputStream(file);
+		ExtensionFilter allFilter = new FileChooser.ExtensionFilter("All files", "*.*");
+		ExtensionFilter mp3Filter = new FileChooser.ExtensionFilter("MP3 files", "*.mp3");
+		ExtensionFilter wavFilter = new FileChooser.ExtensionFilter("WAV files", "*.wav");
+		ExtensionFilter wmaFilter = new FileChooser.ExtensionFilter("WMA files", "*.wma");
+		ExtensionFilter m4aFilter = new FileChooser.ExtensionFilter("M4A files", "*.m4a");
 
-			result = new Track();
-			if (kind.equals("wav") || kind.equals("wma")) {
-				result.setName(file.getName().substring(0, file.getName().length() - 4));
-				result.setLocation(pathFile);
-			} else {
+		fc.getExtensionFilters().addAll(allFilter, mp3Filter, m4aFilter, wavFilter, wmaFilter);
+		list = fc.showOpenMultipleDialog(stage);
+		return filterFiles(list);
+	}
 
-				ContentHandler handler = new DefaultHandler();
-				Metadata metadata = new Metadata();
-				Parser parser = new Mp3Parser();
-				ParseContext parseContext = new ParseContext();
-
-				parser.parse(in, handler, metadata, parseContext);
-				in.close();
-
-				result.setName(metadata.get("title"));
-				result.setArtist(metadata.get("xmpDM:artist"));
-				result.setAlbum(metadata.get("xmpDM:album"));
-				result.setGenre(metadata.get("xmpDM:genre"));
-				result.setLocation(pathFile);
+	public static ObservableList<Track> getMetadataTracks(List<File> listFile) {
+		ObservableList<Track> result = FXCollections.observableArrayList();
+		for (File file : listFile) {
+			Track track = MetadataParser.createTrack(file);
+			if (track != null) {
+				result.add(track);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		return result;
 	}
