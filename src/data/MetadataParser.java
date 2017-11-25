@@ -25,7 +25,7 @@ public class MetadataParser {
 			AudioFile audioFile = AudioFileIO.read(file);
 
 			track.setSize(file.length());
-			track.setTime(audioFile.getAudioHeader().getTrackLength());
+			track.setTime(audioFile.getAudioHeader().getTrackLength() + "");
 			track.setEncoding(audioFile.getAudioHeader().getEncodingType());
 			track.setLocation(file.toURI().toString());
 

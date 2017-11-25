@@ -80,9 +80,9 @@ public class DataAccess {
 
 				long id = (long) element.get("id");
 				long size = (long) element.get("size");
-				double time = (Double) element.get("total_time");
+				String time = (String) element.get("total_time");
 				
-				String year = (String) element.get("year");
+				String year = element.get("year").toString();
 				String artist = (String) element.get("artist");
 				String album = (String) element.get("album");
 				String name = (String) element.get("name");

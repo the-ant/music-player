@@ -14,7 +14,7 @@ public class Track {
 	private String location;
 	private String encoding = "";
 	private Optional<byte[]> coverImage;
-	private double time;
+	private String time;
 
 	public Track() {
 		this.name = "";
@@ -26,7 +26,7 @@ public class Track {
 		this.encoding = "";
 	}
 
-	public Track(long id, long size, String year, double time, String name, String artist, String album,
+	public Track(long id, long size, String year, String time, String name, String artist, String album,
 			String genre, String encoding, String location) {
 		this.setId(id);
 		this.setAlbum(album);
@@ -48,11 +48,20 @@ public class Track {
 		this.name = name;
 	}
 
-	public double getTime() {
+	public String getTime() {
+//		double hour = (time/1000)/3600 ;
+//		double min = (time/1000)/60 ;
+//		double sec = (time/1000)%60;
+//		if(hour <= 0) {
+//			return min+":"+sec;
+//		}
+//		else {
+//			return hour+":"+min+":"+sec;
+//		}
 		return time;
 	}
 
-	public void setTime(double time) {
+	public void setTime(String time) {
 		this.time = time;
 	}
 

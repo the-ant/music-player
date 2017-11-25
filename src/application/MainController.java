@@ -7,6 +7,8 @@ import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.concurrent.ForkJoinPool;
 
+import org.apache.commons.io.FilenameUtils;
+
 import data.DataAccess;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.application.Platform;
@@ -42,6 +44,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import pojos.Playlist;
 import pojos.Track;
+import util.ControllerPlaySong;
 import util.DirectoryUtil;
 import util.ListViewUtil;
 import util.MenuUtil;
@@ -133,7 +136,12 @@ public class MainController implements Initializable {
 			if (mMediaPlayer != null) {
 				mMediaPlayer.stop();
 			}
-			mMedia = new Media(filePath);
+			if(FilenameUtils.getExtension(filePath).equals("wma")){
+				mMedia = new Media(ControllerPlaySong.conver(filePath.substring(6)));
+			}else {
+				mMedia = new Media(filePath);
+			}
+			
 			mMediaPlayer = new MediaPlayer(mMedia);
 			mMediaPlayer.setAutoPlay(true);
 
@@ -178,7 +186,7 @@ public class MainController implements Initializable {
 					}
 				}
 			});
-
+			
 			volumeSlider.valueProperty().addListener(new InvalidationListener() {
 				public void invalidated(Observable ov) {
 					if (volumeSlider.isValueChanging()) {
@@ -191,16 +199,17 @@ public class MainController implements Initializable {
 	}
 
 	protected void updatetimeTrackBar() {
-		if (timeUp != null && trackSlider != null && volumeSlider != null && duration != null) {
+		if (timeUp != null && timeDown != null && trackSlider != null && volumeSlider != null && duration != null) {
 			Platform.runLater(new Runnable() {
 				@SuppressWarnings("deprecation")
 				public void run() {
 					Duration currentTime = mMediaPlayer.getCurrentTime();
-					timeUp.setText(formatTime(currentTime, duration));
+					timeUp.setText(ControllerPlaySong.formatTimeElapsed(currentTime));
+					timeDown.setText(ControllerPlaySong.formatTimeElapsed(duration));
 					trackSlider.setDisable(duration.isUnknown());
 					if (!trackSlider.isDisabled() && duration.greaterThan(Duration.ZERO)
 							&& !trackSlider.isValueChanging()) {
-						trackSlider.setValue(currentTime.divide(duration).toMillis() * 100.0);
+						trackSlider.setValue(currentTime.divide(duration.toMillis()).toMillis() * 100.0);
 						trackProgressBar.setProgress(trackSlider.getValue() / trackSlider.getMax());
 					}
 					if (!volumeSlider.isValueChanging()) {
@@ -212,38 +221,7 @@ public class MainController implements Initializable {
 		}
 	}
 
-	private static String formatTime(Duration elapsed, Duration duration) {
-		int intElapsed = (int) Math.floor(elapsed.toSeconds());
-		int elapsedHours = intElapsed / (60 * 60);
-		if (elapsedHours > 0) {
-			intElapsed -= elapsedHours * 60 * 60;
-		}
-		int elapsedMinutes = intElapsed / 60;
-		int elapsedSeconds = intElapsed - elapsedHours * 60 * 60 - elapsedMinutes * 60;
-
-		if (duration.greaterThan(Duration.ZERO)) {
-			int intDuration = (int) Math.floor(duration.toSeconds());
-			int durationHours = intDuration / (60 * 60);
-			if (durationHours > 0) {
-				intDuration -= durationHours * 60 * 60;
-			}
-			int durationMinutes = intDuration / 60;
-			int durationSeconds = intDuration - durationHours * 60 * 60 - durationMinutes * 60;
-			if (durationHours > 0) {
-				return String.format("%d:%02d:%02d/%d:%02d:%02d", elapsedHours, elapsedMinutes, elapsedSeconds,
-						durationHours, durationMinutes, durationSeconds);
-			} else {
-				return String.format("%02d:%02d/%02d:%02d", elapsedMinutes, elapsedSeconds, durationMinutes,
-						durationSeconds);
-			}
-		} else {
-			if (elapsedHours > 0) {
-				return String.format("%d:%02d:%02d", elapsedHours, elapsedMinutes, elapsedSeconds);
-			} else {
-				return String.format("%02d:%02d", elapsedMinutes, elapsedSeconds);
-			}
-		}
-	}
+	
 
 	private void nextSong() {
 		int idx = tableTracks.getSelectionModel().getSelectedIndex();
