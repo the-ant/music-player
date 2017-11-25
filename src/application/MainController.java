@@ -1,11 +1,8 @@
 package application;
 
-import java.io.File;
 import java.net.URL;
-import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
-import java.util.concurrent.ForkJoinPool;
 
 import data.DataAccess;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -15,16 +12,22 @@ import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.SplitPane.Divider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -33,21 +36,30 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import pojos.Playlist;
 import pojos.Track;
-import util.DirectoryUtil;
-import util.ListViewUtil;
+import util.CustomImageUtil;
+import util.FileChooserUtil;
+import util.DurationUtil;
 import util.MenuUtil;
 import util.TableViewUtil;
+import view.CustomHBox;
+import view.CustomListCell;
 
 public class MainController implements Initializable {
+
+	@FXML
+	private BorderPane root;
 	// ===========================Table
 	// Tracks===============================================
 	@FXML
@@ -59,17 +71,21 @@ public class MainController implements Initializable {
 	// ===========================Library and play
 	// lists======================================
 	@FXML
-	private HBox libraryHBox;
-	@FXML
-	private ImageView imgLib;
-	@FXML
 	private FontAwesomeIconView newPlaylist;
+	@FXML
+	private VBox libVBox;
+	@FXML
+	private BorderPane playlistsBorderPane;
 	@FXML
 	private ListView<Playlist> lvPlaylists;
 	@FXML
-	private Label libraryLabel, nameLib;
-
-	ForkJoinPool forkJoinPool = new ForkJoinPool(4);
+	private Button doneBtn;
+	@FXML
+	private Text namePl;
+	@FXML
+	private AnchorPane navigationAnchorPane, addTracksAP;
+	@FXML
+	private SplitPane splitPane;
 	// =====================================================================================
 
 	// ===========================Player======================================================
@@ -88,7 +104,7 @@ public class MainController implements Initializable {
 	// ======================================================================================
 
 	private ObservableList<Playlist> playList;
-	private ObservableList<Track> listSong;
+	private ObservableList<Track> allTracks;
 	private Stage primaryStage = Main.getPrimaryStage();
 	private Media mMedia;
 	private MediaPlayer mMediaPlayer;
@@ -103,27 +119,24 @@ public class MainController implements Initializable {
 	@FXML
 	private TextField tfSearch;
 
+	PseudoClass def = PseudoClass.getPseudoClass("default");
+	PseudoClass selected = PseudoClass.getPseudoClass("selected");
+
 	// =============================================================
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		initMainPLaylist();
 		initTableSong();
 		initListSong();
-		initAllNewPlaylist();
+		initAllPlaylist();
 		initControllSong();
-
 	}
 
 	public void onAddFiletoLibrary(ActionEvent e) {
-		List<File> filesChooser = DirectoryUtil.readFiles(primaryStage);
-		if (filesChooser != null) {
-			ObservableList<Track> listTrack = DirectoryUtil.getMetadataTracks(filesChooser);
-			for (Track track : listTrack) {
-				if (!mData.isExistFile(track)) {
-					mData.writeTrack(track);
-					listSong.add(track);
-				}
-			}
+		ObservableList<Track> tracksChooser = FileChooserUtil.getTracksChooser(primaryStage);
+		if (tracksChooser != null && tracksChooser.size() > 0) {
+			System.out.println("" + tracksChooser.size());
+			allTracks.addAll(tracksChooser);
+			mData.writeTracks(tracksChooser);
 		}
 	}
 
@@ -151,13 +164,12 @@ public class MainController implements Initializable {
 					nextSong();
 				}
 			});
+
 			int index = tableTracks.getSelectionModel().getSelectedIndex();
 			Track track = tableTracks.getItems().get(index);
 			nameTrack.setText(track.getName().toString());
 			artistTrack.setText(track.getArtist().toString());
-			// set image album file mp3
-			// imageSong.setImage(track.setImgAlbumCover(new
-			// Image("/icons/ic_music_black.png")));
+			coverTrack.setImage(CustomImageUtil.setCoverImage(track));
 
 			mMediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
 				@Override
@@ -191,12 +203,16 @@ public class MainController implements Initializable {
 	}
 
 	protected void updatetimeTrackBar() {
+
 		if (timeUp != null && trackSlider != null && volumeSlider != null && duration != null) {
 			Platform.runLater(new Runnable() {
 				@SuppressWarnings("deprecation")
 				public void run() {
 					Duration currentTime = mMediaPlayer.getCurrentTime();
-					timeUp.setText(formatTime(currentTime, duration));
+
+					timeUp.setText(DurationUtil.formatTime(currentTime));
+					timeDown.setText(DurationUtil.formatTime(duration));
+
 					trackSlider.setDisable(duration.isUnknown());
 					if (!trackSlider.isDisabled() && duration.greaterThan(Duration.ZERO)
 							&& !trackSlider.isValueChanging()) {
@@ -212,39 +228,6 @@ public class MainController implements Initializable {
 		}
 	}
 
-	private static String formatTime(Duration elapsed, Duration duration) {
-		int intElapsed = (int) Math.floor(elapsed.toSeconds());
-		int elapsedHours = intElapsed / (60 * 60);
-		if (elapsedHours > 0) {
-			intElapsed -= elapsedHours * 60 * 60;
-		}
-		int elapsedMinutes = intElapsed / 60;
-		int elapsedSeconds = intElapsed - elapsedHours * 60 * 60 - elapsedMinutes * 60;
-
-		if (duration.greaterThan(Duration.ZERO)) {
-			int intDuration = (int) Math.floor(duration.toSeconds());
-			int durationHours = intDuration / (60 * 60);
-			if (durationHours > 0) {
-				intDuration -= durationHours * 60 * 60;
-			}
-			int durationMinutes = intDuration / 60;
-			int durationSeconds = intDuration - durationHours * 60 * 60 - durationMinutes * 60;
-			if (durationHours > 0) {
-				return String.format("%d:%02d:%02d/%d:%02d:%02d", elapsedHours, elapsedMinutes, elapsedSeconds,
-						durationHours, durationMinutes, durationSeconds);
-			} else {
-				return String.format("%02d:%02d/%02d:%02d", elapsedMinutes, elapsedSeconds, durationMinutes,
-						durationSeconds);
-			}
-		} else {
-			if (elapsedHours > 0) {
-				return String.format("%d:%02d:%02d", elapsedHours, elapsedMinutes, elapsedSeconds);
-			} else {
-				return String.format("%02d:%02d", elapsedMinutes, elapsedSeconds);
-			}
-		}
-	}
-
 	private void nextSong() {
 		int idx = tableTracks.getSelectionModel().getSelectedIndex();
 		Track track = null;
@@ -257,7 +240,7 @@ public class MainController implements Initializable {
 			break;
 		case SONG_RANDOM:
 			Random rd = new Random();
-			idx = rd.nextInt(listSong.size() - 1);
+			idx = rd.nextInt(allTracks.size() - 1);
 			tableTracks.getSelectionModel().clearAndSelect(idx);
 			track = tableTracks.getItems().get(idx);
 			if (track != null) {
@@ -265,7 +248,7 @@ public class MainController implements Initializable {
 			}
 			break;
 		default:
-			if (listSong.size() == idx + 1) {
+			if (allTracks.size() == idx + 1) {
 				idx = -1;
 			}
 			tableTracks.getSelectionModel().clearAndSelect(idx + 1);
@@ -280,7 +263,7 @@ public class MainController implements Initializable {
 	private void previousSong() {
 		int idx = tableTracks.getSelectionModel().getSelectedIndex();
 		if (idx == 0) {
-			idx = listSong.size();
+			idx = allTracks.size();
 		}
 		tableTracks.getSelectionModel().clearAndSelect(idx - 1);
 		Track track = tableTracks.getItems().get(idx - 1);
@@ -295,16 +278,13 @@ public class MainController implements Initializable {
 		tcArtist.setCellValueFactory(new PropertyValueFactory<Track, String>("artist"));
 		tcAlbum.setCellValueFactory(new PropertyValueFactory<Track, String>("album"));
 		tcGenre.setCellValueFactory(new PropertyValueFactory<Track, String>("genre"));
+		tcYear.setCellValueFactory(new PropertyValueFactory<Track, String>("year"));
 
 		tableTracks.setPlaceholder(TableViewUtil.createPlaceHolder());
 		tableTracks.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 	}
 
 	private void initListSong() {
-		// Read from file
-		listSong = mData.readData();
-		tableTracks.setItems(listSong);
-
 		// Double click to play this song
 		tableTracks.setRowFactory(tv -> {
 			TableRow<Track> row = new TableRow<>();
@@ -317,12 +297,12 @@ public class MainController implements Initializable {
 						if (track != null) {
 							playSong(track);
 						}
-					} else if(e.isSecondaryButtonDown()) {
+					} else if (e.isSecondaryButtonDown()) {
 						ObservableList<Track> listDetele = tableTracks.getSelectionModel().getSelectedItems();
 						for (Track track : listDetele) {
 							System.out.println(track.getName());
 						}
-						MenuUtil.createContextMenuForTableRow(mData, listDetele, listSong, row);
+						MenuUtil.createContextMenuForTableRow(mData, listDetele, allTracks, row);
 					}
 				}
 			});
@@ -341,42 +321,47 @@ public class MainController implements Initializable {
 		});
 	}
 
-	private void initAllNewPlaylist() {
-		playList = FXCollections.observableArrayList();
-		ListViewUtil.updateItems(lvPlaylists);
-		lvPlaylists.setItems(playList);
+	private void initAllPlaylist() {
+		hideAddTracksToPl();
+		CustomHBox library = new CustomHBox(libVBox);
+		
+		allTracks = library.getTracks();
+		tableTracks.setItems(allTracks);
 
-		lvPlaylists.setOnMouseClicked(v -> {
-			// setSelectedMainList(false);
-			// Playlist item = lvPlaylists.getSelectionModel().getSelectedItem();
+		playList = FXCollections.observableArrayList();
+		lvPlaylists.setItems(playList);
+		lvPlaylists.setPadding(new Insets(2, 0, 2, 15));
+		
+		library.setOnMouseClicked(e -> {
+			lvPlaylists.getSelectionModel().clearSelection();
+			library.setSelected(true);
 		});
 
-	}
+		newPlaylist.setOnMousePressed(e -> {
+			library.setSelected(false);
+			Playlist newPl = new Playlist();
+			newPl.setName("Playlist");
+			playList.add(newPl);
+			lvPlaylists.getSelectionModel().select(newPl);
+			hideNavigationPl();
+			showAddTracksToPl();
+		});
 
-	private void initMainPLaylist() {
-		// newPlaylistController.setOnMousePressed(v -> {
-		//
-		// setSelectedMainList(false);
-		// setSelectedNewPlaylist(true);
-		//
-		// playList.add(CustomPlaylist.createNewPlaylist(playList));
-		// lvPlaylists.getSelectionModel().select(playList.size() - 1);
-		// lvPlaylists.getFocusModel().focus(playList.size() - 1);
-		// lvPlaylists.scrollTo(playList.size() - 1);
-		// });
-		// newPlaylistController.setOnMouseReleased(v -> setSelectedNewPlaylist(false));
+		lvPlaylists.setOnMouseClicked(e -> {
+			library.setSelected(false);
+			Playlist selectedItem = lvPlaylists.getSelectionModel().getSelectedItem();
+		});
+
+		lvPlaylists.setCellFactory(lv -> new CustomListCell());
+
 	}
 
 	private void initControllSong() {
 		bottomBar.setVisible(false);
 		bottomBar.setManaged(false);
+		nextTrack.setOnMouseClicked(v -> nextSong());
+		preTrack.setOnMouseClicked(v -> previousSong());
 
-		nextTrack.setOnMouseClicked(v -> {
-			nextSong();
-		});
-		preTrack.setOnMouseClicked(v -> {
-			previousSong();
-		});
 		playTrack.setOnMouseClicked(v -> {
 			if (mMediaPlayer.getStatus().equals(Status.PLAYING)) {
 				playTrack.setGlyphName("PLAY");
@@ -406,6 +391,32 @@ public class MainController implements Initializable {
 				break;
 			}
 		});
+	}
 
+	public void onDoneAddTracksToPl(MouseEvent e) {
+		showNavigationPl();
+		hideAddTracksToPl();
+	}
+
+	private void showAddTracksToPl() {
+		addTracksAP.setVisible(true);
+		addTracksAP.setManaged(true);
+	}
+
+	private void hideNavigationPl() {
+		splitPane.setDividerPositions(splitPane.getDividerPositions());
+		navigationAnchorPane.setManaged(false);
+		navigationAnchorPane.setVisible(false);
+	}
+
+	private void showNavigationPl() {
+		navigationAnchorPane.setVisible(true);
+		navigationAnchorPane.setManaged(true);
+		splitPane.setDividerPositions(0.2);
+	}
+
+	private void hideAddTracksToPl() {
+		addTracksAP.setManaged(false);
+		addTracksAP.setVisible(false);
 	}
 }

@@ -16,17 +16,23 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="680.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity"
+	minHeight="-Infinity" minWidth="-Infinity" prefHeight="680.0"
+	prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="application.MainController">
 	<top>
 		<VBox prefHeight="65.0" prefWidth="761.0" BorderPane.alignment="CENTER">
 			<children>
-				<MenuBar prefHeight="10.0" prefWidth="761.0" style="-fx-background-color: rgb(214, 212, 212);">
+				<MenuBar prefHeight="10.0" prefWidth="761.0"
+					style="-fx-background-color: rgb(214, 212, 212);">
 					<menus>
 						<Menu mnemonicParsing="false" text="File">
 							<items>
-								<MenuItem mnemonicParsing="false" onAction="#onAddFiletoLibrary" text="Add File to Library...">
+								<MenuItem mnemonicParsing="false" onAction="#onAddFiletoLibrary"
+									text="Add File to Library...">
 									<accelerator>
-										<KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+										<KeyCodeCombination alt="UP" code="O"
+											control="DOWN" meta="UP" shift="UP" shortcut="UP" />
 									</accelerator>
 								</MenuItem>
 							</items>
@@ -43,52 +49,74 @@
 						</Menu>
 					</menus>
 				</MenuBar>
-				<AnchorPane prefHeight="56.0" prefWidth="761.0" style="-fx-background-color: white;" VBox.vgrow="ALWAYS">
+				<AnchorPane prefHeight="56.0" prefWidth="761.0"
+					style="-fx-background-color: white;" VBox.vgrow="ALWAYS">
 					<children>
-						<Button layoutX="10.0" layoutY="5.0" mnemonicParsing="false" style="-fx-background-color: #aad1f7; -fx-label-padding: 3;" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0">
+						<Button layoutX="10.0" layoutY="5.0" mnemonicParsing="false"
+							style="-fx-background-color: #aad1f7; -fx-label-padding: 3;"
+							AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0"
+							AnchorPane.topAnchor="5.0">
 							<graphic>
-								<ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true" />
+								<ImageView fitHeight="24.0" fitWidth="24.0"
+									pickOnBounds="true" preserveRatio="true" />
 							</graphic>
 						</Button>
-						<TextField fx:id="tfSearch" layoutX="535.0" layoutY="5.0" prefHeight="30.0" prefWidth="180.0" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="10.0" />
+						<TextField fx:id="tfSearch" layoutX="535.0" layoutY="5.0"
+							prefHeight="30.0" prefWidth="180.0" AnchorPane.bottomAnchor="10.0"
+							AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="10.0" />
 					</children>
 				</AnchorPane>
 			</children>
 		</VBox>
 	</top>
 	<bottom>
-		<GridPane fx:id="bottomBar" minHeight="90.0" prefHeight="90.0" prefWidth="1200.0" stylesheets="@../css/player.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+		<GridPane fx:id="bottomBar" minHeight="90.0" prefHeight="90.0"
+			prefWidth="1200.0" stylesheets="@../css/player.css" xmlns="http://javafx.com/javafx/8"
+			xmlns:fx="http://javafx.com/fxml/1">
 			<columnConstraints>
-				<ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="10.0" prefWidth="300.0" />
-				<ColumnConstraints hgrow="SOMETIMES" maxWidth="900.0" minWidth="10.0" prefWidth="600.0" />
-				<ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="10.0" prefWidth="300.0" />
+				<ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0"
+					minWidth="10.0" prefWidth="300.0" />
+				<ColumnConstraints hgrow="SOMETIMES" maxWidth="900.0"
+					minWidth="10.0" prefWidth="600.0" />
+				<ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0"
+					minWidth="10.0" prefWidth="300.0" />
 			</columnConstraints>
 			<rowConstraints>
-				<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+				<RowConstraints minHeight="10.0" prefHeight="30.0"
+					vgrow="SOMETIMES" />
 			</rowConstraints>
 			<children>
-				<HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="40.0">
+				<HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0"
+					spacing="40.0">
 					<children>
-						<FontAwesomeIconView fx:id="preTrack" glyphName="BACKWARD" size="32">
+						<FontAwesomeIconView fx:id="preTrack"
+							glyphName="BACKWARD" size="32">
 						</FontAwesomeIconView>
-						<FontAwesomeIconView fx:id="playTrack" glyphName="PLAY" size="32">
+						<FontAwesomeIconView fx:id="playTrack"
+							glyphName="PLAY" size="32">
 						</FontAwesomeIconView>
-						<FontAwesomeIconView fx:id="nextTrack" glyphName="FORWARD" size="32">
+						<FontAwesomeIconView fx:id="nextTrack"
+							glyphName="FORWARD" size="32">
 						</FontAwesomeIconView>
 					</children>
 				</HBox>
 				<HBox GridPane.columnIndex="1">
 					<children>
-						<ImageView fx:id="coverTrack" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+						<ImageView fx:id="coverTrack" fitHeight="90.0" fitWidth="90.0"
+							pickOnBounds="true" preserveRatio="true" />
 						<StackPane>
 							<children>
 								<VBox prefWidth="510.0">
 									<children>
-										<BorderPane minWidth="-Infinity" prefHeight="80.0" prefWidth="510.0">
+										<BorderPane minWidth="-Infinity" prefHeight="80.0"
+											prefWidth="510.0">
 											<left>
 												<VBox alignment="CENTER" prefHeight="58.0" prefWidth="60.0">
 													<children>
-														<FontAwesomeIconView fx:id="optionPlayTrack" glyphName="RANDOM" glyphStyle="-fx-fill: linear-gradient(#70b4e5 0%, #247cbc 70%, #2c85c1 85%)" size="24" />
+														<FontAwesomeIconView fx:id="optionPlayTrack"
+															glyphName="RANDOM"
+															glyphStyle="-fx-fill: linear-gradient(#70b4e5 0%, #247cbc 70%, #2c85c1 85%)"
+															size="24" />
 														<Label fx:id="timeUp" text="1:35" />
 													</children>
 												</VBox>
@@ -96,12 +124,15 @@
 											<center>
 												<VBox alignment="CENTER">
 													<children>
-														<Label fx:id="nameTrack" text="Someone like you" textAlignment="CENTER">
+														<Label fx:id="nameTrack" text="Someone like you"
+															textAlignment="CENTER">
 															<font>
 																<Font name="System Bold" size="14.0" />
 															</font>
 														</Label>
-														<Label fx:id="artistTrack" alignment="CENTER" prefWidth="390.0" text="Adele - Adele - Adele - Adele " BorderPane.alignment="CENTER">
+														<Label fx:id="artistTrack" alignment="CENTER"
+															prefWidth="390.0" text="Adele - Adele - Adele - Adele "
+															BorderPane.alignment="CENTER">
 															<font>
 																<Font size="14.0" />
 															</font>
@@ -113,7 +144,8 @@
 												</VBox>
 											</center>
 											<right>
-												<Label fx:id="timeDown" alignment="CENTER" prefHeight="17.0" prefWidth="60.0" text="3:25" BorderPane.alignment="CENTER">
+												<Label fx:id="timeDown" alignment="CENTER" prefHeight="17.0"
+													prefWidth="60.0" text="3:25" BorderPane.alignment="CENTER">
 													<BorderPane.margin>
 														<Insets top="20.0" />
 													</BorderPane.margin>
@@ -122,18 +154,22 @@
 										</BorderPane>
 										<StackPane VBox.vgrow="ALWAYS">
 											<children>
-												<ProgressBar fx:id="trackProgressBar" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="8.0" prefWidth="510.0" progress="1.0">
+												<ProgressBar fx:id="trackProgressBar" maxHeight="-Infinity"
+													maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+													prefHeight="8.0" prefWidth="510.0" progress="1.0">
 													<StackPane.margin>
 														<Insets bottom="-8.0" />
 													</StackPane.margin>
 												</ProgressBar>
-												<Slider fx:id="trackSlider" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="10.0" prefWidth="510.0">
+												<Slider fx:id="trackSlider" disable="true" maxHeight="-Infinity"
+													maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+													prefHeight="10.0" prefWidth="510.0">
 													<StackPane.margin>
 														<Insets bottom="-8.0" />
 													</StackPane.margin>
-                                       <padding>
-                                          <Insets right="-13.0" />
-                                       </padding>
+													<padding>
+														<Insets right="-13.0" />
+													</padding>
 												</Slider>
 											</children>
 											<VBox.margin>
@@ -146,14 +182,19 @@
 						</StackPane>
 					</children>
 				</HBox>
-				<StackPane alignment="CENTER_LEFT" prefHeight="150.0" prefWidth="200.0" stylesheets="@../css/player.css" GridPane.columnIndex="2">
+				<StackPane alignment="CENTER_LEFT" prefHeight="150.0"
+					prefWidth="200.0" stylesheets="@../css/player.css"
+					GridPane.columnIndex="2">
 					<children>
-                  <ProgressBar fx:id="volumeProgressBar" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="10.0" prefWidth="200.0" progress="0.0" />
-						<Slider fx:id="volumeSlider" maxWidth="-Infinity" prefWidth="200.0" />
+						<ProgressBar fx:id="volumeProgressBar" maxHeight="-Infinity"
+							maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+							prefHeight="10.0" prefWidth="200.0" progress="0.0" />
+						<Slider fx:id="volumeSlider" maxWidth="-Infinity"
+							prefWidth="200.0" />
 					</children>
-               <padding>
-                  <Insets left="30.0" />
-               </padding>
+					<padding>
+						<Insets left="30.0" />
+					</padding>
 				</StackPane>
 			</children>
 			<BorderPane.margin>
@@ -162,13 +203,18 @@
 		</GridPane>
 	</bottom>
 	<center>
-		<SplitPane fx:id="splitPane" dividerPositions="0.1" stylesheets="@../css/navigation.css">
+		<SplitPane fx:id="splitPane" dividerPositions="0.1"
+			stylesheets="@../css/navigation.css">
 			<items>
-				<AnchorPane maxWidth="500.0" minWidth="250.0" style="-fx-background-color: white;">
+				<AnchorPane maxWidth="500.0" minWidth="250.0"
+					style="-fx-background-color: white;">
 					<children>
-						<BorderPane prefHeight="522.0" prefWidth="250.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+						<BorderPane prefHeight="522.0" prefWidth="250.0"
+							AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+							AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 							<top>
-								<VBox maxHeight="-Infinity" prefHeight="61.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+								<VBox maxHeight="-Infinity" prefHeight="61.0" prefWidth="250.0"
+									BorderPane.alignment="CENTER">
 									<children>
 										<Label text="Library" textFill="#909090">
 											<font>
@@ -178,9 +224,12 @@
 												<Insets bottom="5.0" left="15.0" top="5.0" />
 											</VBox.margin>
 										</Label>
-										<HBox fx:id="libraryHBox" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" style="-fx-background-color: rgb(166.0, 158.0, 255.0);">
+										<HBox fx:id="libraryHBox" alignment="CENTER_LEFT"
+											prefHeight="100.0" prefWidth="200.0" spacing="5.0"
+											style="-fx-background-color: rgb(166.0, 158.0, 255.0);">
 											<children>
-												<ImageView fx:id="imgLib" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true" />
+												<ImageView fx:id="imgLib" fitHeight="24.0"
+													fitWidth="24.0" pickOnBounds="true" preserveRatio="true" />
 												<Label fx:id="nameLib" text="Music" textFill="WHITE">
 													<font>
 														<Font name="FontAwesome Regular" size="14.0" />
@@ -200,7 +249,8 @@
 							<center>
 								<BorderPane prefWidth="200.0">
 									<top>
-										<Label text="Playlists" textFill="#909090" BorderPane.alignment="CENTER_LEFT">
+										<Label text="Playlists" textFill="#909090"
+											BorderPane.alignment="CENTER_LEFT">
 											<font>
 												<Font name="System Bold" size="14.0" />
 											</font>
@@ -210,7 +260,9 @@
 										</Label>
 									</top>
 									<center>
-										<ListView fx:id="lvPlaylists" prefWidth="250.0" style="-fx-border-color: rgb(216.0, 212.0, 212.0); -fx-background-insets: 0;" BorderPane.alignment="CENTER">
+										<ListView fx:id="lvPlaylists" prefWidth="250.0"
+											style="-fx-border-color: rgb(216.0, 212.0, 212.0); -fx-background-insets: 0;"
+											BorderPane.alignment="CENTER">
 											<opaqueInsets>
 												<Insets />
 											</opaqueInsets>
@@ -225,9 +277,14 @@
 								</BorderPane>
 							</center>
 							<bottom>
-								<AnchorPane style="-fx-border-radius: 1; -fx-border-color: rgb(216, 212, 212);" BorderPane.alignment="CENTER">
+								<AnchorPane
+									style="-fx-border-radius: 1; -fx-border-color: rgb(216, 212, 212);"
+									BorderPane.alignment="CENTER">
 									<children>
-										<FontAwesomeIconView fx:id="newPlaylist" fill="#aea8a8" glyphName="PLUS" size="18" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="5.0">
+										<FontAwesomeIconView fx:id="newPlaylist"
+											fill="#aea8a8" glyphName="PLUS" size="18"
+											AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="15.0"
+											AnchorPane.topAnchor="5.0">
 										</FontAwesomeIconView>
 									</children>
 									<BorderPane.margin>
@@ -240,14 +297,23 @@
 				</AnchorPane>
 				<AnchorPane>
 					<children>
-						<TableView fx:id="tableTracks" prefHeight="519.0" prefWidth="990.0" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="-1.0" BorderPane.alignment="CENTER">
+						<TableView fx:id="tableTracks" prefHeight="519.0"
+							prefWidth="990.0" AnchorPane.bottomAnchor="-1.0"
+							AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="-1.0"
+							AnchorPane.topAnchor="-1.0" BorderPane.alignment="CENTER">
 							<columns>
-								<TableColumn fx:id="tcName" maxWidth="500.0" minWidth="100.0" prefWidth="300.0" text="Name" />
-								<TableColumn fx:id="tcArtist" maxWidth="300.0" minWidth="70.0" prefWidth="200.0" text="Artist" />
-								<TableColumn fx:id="tcAlbum" maxWidth="300.0" minWidth="70.0" prefWidth="200.0" text="Album" />
-								<TableColumn fx:id="tcGenre" maxWidth="200.0" minWidth="50.0" prefWidth="120.0" text="Genre" />
-								<TableColumn fx:id="tcTime" maxWidth="300.0" prefWidth="90.0" text="Time" />
-								<TableColumn fx:id="tcYear" maxWidth="200.0" prefWidth="90.0" text="Year" />
+								<TableColumn fx:id="tcName" maxWidth="500.0"
+									minWidth="100.0" prefWidth="300.0" text="Name" />
+								<TableColumn fx:id="tcArtist" maxWidth="300.0"
+									minWidth="70.0" prefWidth="200.0" text="Artist" />
+								<TableColumn fx:id="tcAlbum" maxWidth="300.0"
+									minWidth="70.0" prefWidth="200.0" text="Album" />
+								<TableColumn fx:id="tcGenre" maxWidth="200.0"
+									minWidth="50.0" prefWidth="120.0" text="Genre" />
+								<TableColumn fx:id="tcTime" maxWidth="300.0"
+									prefWidth="90.0" text="Time" />
+								<TableColumn fx:id="tcYear" maxWidth="200.0"
+									prefWidth="90.0" text="Year" />
 							</columns>
 							<BorderPane.margin>
 								<Insets bottom="-1.0" left="-1.0" right="-1.0" />
@@ -264,5 +330,4 @@
 			</BorderPane.margin>
 		</SplitPane>
 	</center>
-
 </BorderPane>

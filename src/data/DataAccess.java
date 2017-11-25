@@ -10,8 +10,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
+import org.jaudiotagger.tag.Tag;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -19,6 +24,8 @@ import org.json.simple.parser.ParseException;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
+import pojos.Playlist;
 import pojos.Track;
 
 public class DataAccess {
@@ -30,6 +37,7 @@ public class DataAccess {
 	private static final String TRACKS = "tracks";
 	private static final String PLAYLISTS = "playlists";
 	private static final String COUNTER = "counter";
+	private static final String LIBRARY = "library";
 
 	private DataAccess() {
 		createLibrary();
@@ -43,8 +51,35 @@ public class DataAccess {
 		return DataAccessHelper.INSTANCE;
 	}
 
-	public void replaceData() {
+	public ObservableMap<String, ObservableList<Playlist>> getMapPlaylists() {
+		ObservableList<Playlist> playlists = FXCollections.observableArrayList();
 
+		JSONObject obj = parseJSONObject();
+		if (obj != null) {
+			JSONObject plObj = (JSONObject) obj.get(PLAYLISTS);
+			
+		}
+		return null;
+	}
+
+	public ObservableList<Track> getTracksOfLib() {
+		ObservableList<Track> result = FXCollections.observableArrayList();
+		ObservableMap<Long, Track> tracks = mapTracksById();
+		if (tracks.size() > 0) {
+			JSONObject obj = parseJSONObject();
+			if (obj != null) {
+				JSONArray library = (JSONArray) obj.get(LIBRARY);
+				if (!library.isEmpty()) {
+					for (int i = 0; i < library.size(); i++) {
+						long trackId = (long) library.get(i);
+						if (tracks.containsKey(trackId)) {
+							result.add(tracks.get(trackId));
+						}
+					}
+				}
+			}
+		}
+		return result;
 	}
 
 	public void deleteTrack(Track track) {
@@ -69,52 +104,97 @@ public class DataAccess {
 		}
 	}
 
-	public ObservableList<Track> readData() {
+	public Track readTrack(JSONObject trackObj) {
+		Track track = new Track();
+		long id = (long) trackObj.get("id");
+		long size = (long) trackObj.get("size");
+		String durationStr = (String) trackObj.get("total_time");
+
+		String year = (String) trackObj.get("year");
+		String artist = (String) trackObj.get("artist");
+		String album = (String) trackObj.get("album");
+		String name = (String) trackObj.get("name");
+		String encoding = (String) trackObj.get("kind");
+		String genre = (String) trackObj.get("genre");
+		String location = (String) trackObj.get("location");
+
+		Tag tag = MetadataParser.getAudioTag(location).get();
+		Optional<byte[]> coverImageOpt = MetadataParser.getCoverBytes(tag);
+
+		track.setId(id);
+		track.setSize(size);
+		track.setAlbum(album);
+		track.setArtist(artist);
+		track.setCoverImage(coverImageOpt);
+		track.setTime(durationStr);
+		track.setEncoding(encoding);
+		track.setGenre(genre);
+		track.setLocation(location);
+		track.setName(name);
+		track.setYear(year);
+		return track;
+	}
+
+	public ObservableList<Track> readTracks() {
 		ObservableList<Track> result = FXCollections.observableArrayList();
 		JSONObject obj = parseJSONObject();
 		if (obj != null) {
 			JSONArray tracks = (JSONArray) obj.get(TRACKS);
-			Track track = null;
 			for (int i = 0; i < tracks.size(); i++) {
 				JSONObject element = (JSONObject) tracks.get(i);
-
-				long id = (long) element.get("id");
-				long size = (long) element.get("size");
-				double time = (Double) element.get("total_time");
-				
-				String year = (String) element.get("year");
-				String artist = (String) element.get("artist");
-				String album = (String) element.get("album");
-				String name = (String) element.get("name");
-				String encoding = (String) element.get("kind");
-				String genre = (String) element.get("genre");
-				String location = (String) element.get("location");
-
-				track = new Track(id, size, year, time, name, artist, album, genre, encoding, location);
+				Track track = readTrack(element);
 				result.add(track);
 			}
 		}
 		return result;
 	}
-	
-	public boolean isExistFile(Track track) {
-		boolean result = false;
+
+	public ObservableMap<Long, Track> mapTracksById() {
+		ObservableMap<Long, Track> result = FXCollections.observableHashMap();
 		JSONObject obj = parseJSONObject();
 		if (obj != null) {
 			JSONArray tracks = (JSONArray) obj.get(TRACKS);
 			for (int i = 0; i < tracks.size(); i++) {
 				JSONObject element = (JSONObject) tracks.get(i);
-				String location = (String) element.get("location");
-				if (track.getLocation().equals(location)) {
-					result = true;
+				Track track = readTrack(element);
+				result.put(track.getId(), track);
+			}
+		}
+		return result;
+	}
+
+	public Map<Integer, Track> mapTracksByLocation() {
+		Map<Integer, Track> result = new HashMap<Integer, Track>();
+		JSONObject obj = parseJSONObject();
+		if (obj != null) {
+			JSONArray tracks = (JSONArray) obj.get(TRACKS);
+			if (!tracks.isEmpty()) {
+				for (int i = 0; i < tracks.size(); i++) {
+					JSONObject element = (JSONObject) tracks.get(i);
+					Track track = readTrack(element);
+					result.put(track.getLocation().hashCode(), track);
 				}
 			}
 		}
 		return result;
 	}
 
+	public void filterExistFiles(List<File> filesChooser) {
+		Map<Integer, Track> tracks = mapTracksByLocation();
+		if (tracks.size() > 0) {
+			Iterator<File> iterator = filesChooser.iterator();
+			while (iterator.hasNext()) {
+				File file = iterator.next();
+				if (tracks.containsKey(file.toURI().toString().hashCode())) {
+					iterator.remove();
+					System.out.println("remove");
+				}
+			}
+		}
+	}
+
 	@SuppressWarnings("unchecked")
-	public void writeTrack(Track track) {
+	public synchronized void writeTrack(Track track) {
 		JSONObject obj = parseJSONObject();
 		if (obj != null) {
 			JSONArray tracks = (JSONArray) obj.get(TRACKS);
@@ -126,27 +206,39 @@ public class DataAccess {
 			writeJSONToFile(obj);
 		}
 	}
-	
+
 	public void writeTracks(List<Track> tracks) {
 		for (Track track : tracks) {
 			writeTrack(track);
+			addToLib(track.getId());
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private JSONObject createJSONObject(Track song, long counter) {
+	public synchronized void addToLib(long id) {
+		JSONObject obj = parseJSONObject();
+		if (obj != null) {
+			JSONArray library = (JSONArray) obj.get(LIBRARY);
+			library.add(id);
+			obj.put(LIBRARY, library);
+			writeJSONToFile(obj);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private JSONObject createJSONObject(Track track, long counter) {
 		JSONObject item = new JSONObject();
-		song.setId(++counter);
-		item.put("id", song.getId());
-		item.put("name", song.getName());
-		item.put("artist", song.getArtist());
-		item.put("album", song.getAlbum());
-		item.put("genre", song.getGenre());
-		item.put("kind", song.getEncoding());
-		item.put("size", song.getSize());
-		item.put("total_time", song.getTime());
-		item.put("year", song.getYear());
-		item.put("location", song.getLocation());
+		track.setId(++counter);
+		item.put("id", track.getId());
+		item.put("name", track.getName());
+		item.put("artist", track.getArtist());
+		item.put("album", track.getAlbum());
+		item.put("genre", track.getGenre());
+		item.put("kind", track.getEncoding());
+		item.put("size", track.getSize());
+		item.put("total_time", track.getTime());
+		item.put("year", track.getYear());
+		item.put("location", track.getLocation());
 		return item;
 	}
 
@@ -176,18 +268,19 @@ public class DataAccess {
 			directory.mkdir();
 		}
 
-		File library = new File(getPathFileLibData());
-		if (library.exists()) {
-			// System.out.println("lib existed");
-		} else {
+		File libraryFile = new File(getPathFileLibData());
+		if (!libraryFile.exists()) {
 			JSONObject obj = new JSONObject();
-			// Tracks
+
 			JSONArray tracks = new JSONArray();
 			obj.put(TRACKS, tracks);
-			// Play lists
-			JSONArray playlists = new JSONArray();
+
+			JSONObject playlists = new JSONObject();
 			obj.put(PLAYLISTS, playlists);
-			// Counter ID
+
+			JSONArray library = new JSONArray();
+			obj.put(LIBRARY, library);
+
 			long counter = 0;
 			obj.put(COUNTER, counter);
 
@@ -195,7 +288,7 @@ public class DataAccess {
 		}
 	}
 
-	private void writeJSONToFile(JSONObject obj) {
+	private synchronized void writeJSONToFile(JSONObject obj) {
 		Writer writer = null;
 		try {
 			writer = new BufferedWriter(

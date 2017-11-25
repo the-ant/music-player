@@ -26,46 +26,33 @@
 	-fx-text-fill: white;
 }
 
-#playlistsListView .list-cell:filled:focused:selected {
+#lvPlaylists .list-cell:filled:focused:selected {
     -fx-background-color: rgb(166.0, 158.0, 255.0);
     -fx-background-insets: 0.0, 1.0, 2.0;
-    -fx-background: -fx-accent;
-    -fx-text-fill: -fx-selection-bar-text;
 }
 
-#playlistsListView .scroll-bar:horizontal .track,
-#playlistsListView .scroll-bar:vertical .track{
-	-fx-background-color:transparent;
-	-fx-border-color:transparent;
-	-fx-background-radius: 0.0em;
-	-fx-border-radius:2.0em;
+#lvPlaylists .scroll-bar:vertical .increment-arrow,
+#lvPlaylists .scroll-bar:vertical .decrement-arrow,
+#lvPlaylists .scroll-bar:vertical .increment-button,
+#lvPlaylists .scroll-bar:vertical .decrement-button {
+    -fx-padding:0.0;
 }
 
-#playlistsListView .scroll-bar:horizontal .increment-button ,
-#playlistsListView .scroll-bar:horizontal .decrement-button {
-    -fx-background-color:transparent;
-	-fx-background-radius: 0.0em;
-	-fx-padding:0.0 0.0 10.0 0.0;
-
+#lvPlaylists {
+  -fx-background-insets: 0.0;
+  -fx-padding: 0.0;
 }
 
-#playlistsListView .scroll-bar:vertical .increment-button ,
-#playlistsListView .scroll-bar:vertical .decrement-button {
-    -fx-background-color:transparent;
-	-fx-background-radius: 0.0em;
-	-fx-padding:0.0 10.0 0.0 0.0;
+.list-cell:default {
+	-fx-graphic: url('../icons/ic_playlist_black.png');
+    -fx-text-fill: black;
+    -fx-background-color: transparent;
 }
 
-#playlistsListView  .scroll-bar .increment-arrow,
-#playlistsListView  .scroll-bar .decrement-arrow{
-	-fx-shape: " ";	
-	-fx-padding:0.0;
+.list-cell:selected {
+	-fx-graphic: url('../icons/ic_playlist_white.png');
+    -fx-text-fill: white;
+    -fx-background-color: rgb(166.0, 158.0, 255.0);
 }
 
-#playlistsListView .scroll-bar:horizontal .thumb,
-#playlistsListView .scroll-bar:vertical .thumb {
-    -fx-background-color:derive(black,90.0%);
-	-fx-background-insets: 2.0, 0.0, 0.0;
-	-fx-background-radius: 2.0em;
 
-}

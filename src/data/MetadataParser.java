@@ -2,6 +2,9 @@ package data;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Optional;
 
 import org.jaudiotagger.audio.AudioFile;
@@ -12,11 +15,27 @@ import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.util.Duration;
 import pojos.Track;
+import util.DurationUtil;
 
 public class MetadataParser {
 
 	private MetadataParser() {
+	}
+	
+	public static ObservableList<Track> getMetadataTracks(List<File> listFile) {
+		ObservableList<Track> result = FXCollections.observableArrayList();
+		for (File file : listFile) {
+			Track track = createTrack(file);
+			if (track != null) {
+				result.add(track);
+			}
+		}
+		return result;
 	}
 
 	public static Track createTrack(File file) {
@@ -25,7 +44,9 @@ public class MetadataParser {
 			AudioFile audioFile = AudioFileIO.read(file);
 
 			track.setSize(file.length());
-			track.setTime(audioFile.getAudioHeader().getTrackLength());
+			Duration duration = Duration.seconds(audioFile.getAudioHeader().getTrackLength());
+			track.setDuration(duration);
+			track.setTime(DurationUtil.formatTime(duration));
 			track.setEncoding(audioFile.getAudioHeader().getEncodingType());
 			track.setLocation(file.toURI().toString());
 
@@ -77,6 +98,18 @@ public class MetadataParser {
 				| InvalidAudioFrameException exception) {
 			optionalTag = Optional.empty();
 		}
+		return optionalTag;
+	}
+
+	public static Optional<Tag> getAudioTag(String filePath) {
+		Optional<Tag> optionalTag ;
+		File file = null;
+		try {
+			file = new File(new URI(filePath));
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		optionalTag = getAudioTag(file);
 		return optionalTag;
 	}
 }

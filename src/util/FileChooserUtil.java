@@ -6,17 +6,19 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
+
+import data.DataAccess;
 import data.MetadataParser;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import pojos.Track;
 
-public class DirectoryUtil {
+public class FileChooserUtil {
 
 	private static List<String> validFiles = new ArrayList<>(Arrays.asList("mp3", "m4a", "wma", "wav"));
+	private static DataAccess dataAccess = DataAccess.getInstance();
 
 	private static List<File> filterFiles(List<File> list) {
 		List<File> result = null;
@@ -28,7 +30,6 @@ public class DirectoryUtil {
 					result.add(list.get(i));
 				}
 			}
-
 		}
 		return result;
 	}
@@ -48,14 +49,14 @@ public class DirectoryUtil {
 		return filterFiles(list);
 	}
 
-	public static ObservableList<Track> getMetadataTracks(List<File> listFile) {
-		ObservableList<Track> result = FXCollections.observableArrayList();
-		for (File file : listFile) {
-			Track track = MetadataParser.createTrack(file);
-			if (track != null) {
-				result.add(track);
-			}
+	public static ObservableList<Track> getTracksChooser(Stage primaryStage) {
+		ObservableList<Track> listTrack = null;
+		List<File> filesChooser = readFiles(primaryStage);
+		
+		if (filesChooser.size() > 0) {
+			dataAccess.filterExistFiles(filesChooser);
+			listTrack = MetadataParser.getMetadataTracks(filesChooser);
 		}
-		return result;
+		return listTrack;
 	}
 }

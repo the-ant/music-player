@@ -2,6 +2,8 @@ package pojos;
 
 import java.util.Optional;
 
+import javafx.util.Duration;
+
 public class Track {
 
 	private long id;
@@ -14,7 +16,8 @@ public class Track {
 	private String location;
 	private String encoding = "";
 	private Optional<byte[]> coverImage;
-	private double time;
+	private String time;
+	private Duration duration = Duration.UNKNOWN;
 
 	public Track() {
 		this.name = "";
@@ -24,10 +27,11 @@ public class Track {
 		this.location = "";
 		this.year = "";
 		this.encoding = "";
+		this.coverImage = Optional.empty();
 	}
 
-	public Track(long id, long size, String year, double time, String name, String artist, String album,
-			String genre, String encoding, String location) {
+	public Track(long id, long size, String year, String time, String name, String artist, String album, String genre,
+			String encoding, String location, Optional<byte[]> cover) {
 		this.setId(id);
 		this.setAlbum(album);
 		this.setSize(size);
@@ -38,6 +42,7 @@ public class Track {
 		this.setGenre(genre);
 		this.setEncoding(encoding);
 		this.setLocation(location);
+		this.setCoverImage(cover);
 	}
 
 	public String getName() {
@@ -48,11 +53,11 @@ public class Track {
 		this.name = name;
 	}
 
-	public double getTime() {
+	public String getTime() {
 		return time;
 	}
 
-	public void setTime(double time) {
+	public void setTime(String time) {
 		this.time = time;
 	}
 
@@ -126,6 +131,14 @@ public class Track {
 
 	public void setEncoding(String encoding) {
 		this.encoding = encoding;
+	}
+
+	public Duration getDuration() {
+		return duration;
+	}
+
+	public void setDuration(Duration duration) {
+		this.duration = duration;
 	}
 
 }
