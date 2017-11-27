@@ -2,11 +2,16 @@ package application;
 
 import java.io.File;
 import java.net.URL;
+import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.concurrent.ForkJoinPool;
+import java.util.regex.Pattern;
 
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import org.apache.commons.io.FilenameUtils;
 
 import data.DataAccess;
@@ -44,11 +49,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import pojos.Playlist;
 import pojos.Track;
-import util.ControllerPlaySong;
-import util.DirectoryUtil;
-import util.ListViewUtil;
-import util.MenuUtil;
-import util.TableViewUtil;
+import util.*;
 
 public class MainController implements Initializable {
 	// ===========================Table
@@ -92,6 +93,7 @@ public class MainController implements Initializable {
 
 	private ObservableList<Playlist> playList;
 	private ObservableList<Track> listSong;
+	private ObservableList<Track> tmplistSong;
 	private Stage primaryStage = Main.getPrimaryStage();
 	private Media mMedia;
 	private MediaPlayer mMediaPlayer;
@@ -114,7 +116,48 @@ public class MainController implements Initializable {
 		initListSong();
 		initAllNewPlaylist();
 		initControllSong();
+		search();
+	}
 
+	private void search() {
+		ObservableList<Track> formatListSong = formatListSong();
+		tfSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue != null || !newValue.isEmpty()) {
+				String formatNewValue = deAccent(newValue);
+				Search.search(formatNewValue, formatListSong);
+			}
+		});
+		Search.hasResultsProperty().addListener((observable, hadResults, hasResults) -> {
+			if (hasResults) {
+				List<Long> resultSearching = Search.getResult();
+				List<Track> newListSongForSearching = new ArrayList<>();
+				for (Long id : resultSearching) {
+					for (Track track : listSong) {
+						if (id.equals(track.getId())) {
+							newListSongForSearching.add(track);
+						}
+					}
+				}
+				ObservableList<Track> trackObservableList = FXCollections.observableList(newListSongForSearching);
+				SortedList<Track> trackSortedList = new SortedList<Track>(trackObservableList);
+				trackSortedList.comparatorProperty().bind(tableTracks.comparatorProperty());
+				tableTracks.setItems(trackSortedList);
+			}
+		});
+	}
+	public ObservableList<Track> formatListSong() {
+		for (Track song: tmplistSong) {
+			song.setName(deAccent(song.getName()));
+			song.setArtist(deAccent(song.getArtist()));
+			song.setAlbum(deAccent(song.getAlbum()));
+		}
+		return tmplistSong;
+	}
+	// transfer vietnamese to normal word.
+	public static String deAccent(String str) {
+		String nfdNormalizedString = Normalizer.normalize(str, Normalizer.Form.NFD);
+		Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+		return pattern.matcher(nfdNormalizedString).replaceAll("");
 	}
 
 	public void onAddFiletoLibrary(ActionEvent e) {
@@ -281,6 +324,7 @@ public class MainController implements Initializable {
 	private void initListSong() {
 		// Read from file
 		listSong = mData.readData();
+		tmplistSong = mData.readData();
 		tableTracks.setItems(listSong);
 
 		// Double click to play this song
@@ -386,4 +430,6 @@ public class MainController implements Initializable {
 		});
 
 	}
+
+
 }

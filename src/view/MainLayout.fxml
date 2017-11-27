@@ -3,7 +3,7 @@
 <?import javafx.scene.paint.*?>
 <?import de.jensd.fx.glyphs.fontawesome.*?>
 <?import javafx.scene.input.*?>
-<?import de.jensd.fx.glyphs.testapps.*?>
+<!--<?import de.jensd.fx.glyphs.testapps.*?>-->
 <?import javafx.scene.text.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.*?>
