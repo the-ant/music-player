@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="jaudiotagger-2.2.6-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="tika-app-1.16.jar"/>
 	<classpathentry kind="lib" path="fontawesomefx-8.6.jar"/>
+	<classpathentry kind="lib" path="jave-1.0.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

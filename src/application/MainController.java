@@ -4,6 +4,8 @@ import java.net.URL;
 import java.util.Random;
 import java.util.ResourceBundle;
 
+import org.apache.commons.io.FilenameUtils;
+
 import data.DataAccess;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.application.Platform;
@@ -48,6 +50,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import pojos.Playlist;
 import pojos.Track;
+import util.ControllerPlaySong;
 import util.CustomImageUtil;
 import util.FileChooserUtil;
 import util.DurationUtil;
@@ -122,6 +125,7 @@ public class MainController implements Initializable {
 	PseudoClass def = PseudoClass.getPseudoClass("default");
 	PseudoClass selected = PseudoClass.getPseudoClass("selected");
 
+
 	// =============================================================
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -146,7 +150,11 @@ public class MainController implements Initializable {
 			if (mMediaPlayer != null) {
 				mMediaPlayer.stop();
 			}
-			mMedia = new Media(filePath);
+			if (FilenameUtils.getExtension(filePath).equals("wma")) {
+				mMedia = new Media(ControllerPlaySong.conver(filePath.substring(6)));
+			} else {
+				mMedia = new Media(filePath);
+			}
 			mMediaPlayer = new MediaPlayer(mMedia);
 			mMediaPlayer.setAutoPlay(true);
 
@@ -175,7 +183,7 @@ public class MainController implements Initializable {
 				@Override
 				public void changed(ObservableValue<? extends Duration> observable, Duration oldValue,
 						Duration newValue) {
-					updatetimeTrackBar();
+						updatetimeTrackBar();
 				}
 			});
 
@@ -186,10 +194,25 @@ public class MainController implements Initializable {
 						if (duration != null) {
 							mMediaPlayer.seek(duration.multiply(trackSlider.getValue() / 100.0));
 						}
-						updatetimeTrackBar();
+							updatetimeTrackBar();
 					}
 				}
 			});
+
+			trackSlider.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+				System.out.println("trackSlider");
+				if (duration != null) {
+					System.out.println("getValue: " + trackSlider.getValue());
+					mMediaPlayer.seek(duration.multiply(trackSlider.getValue() / 100.0));
+					System.out.println("duration: " + duration.multiply(trackSlider.getValue() / 100.0));
+					trackSlider.setValue(mMediaPlayer.getCurrentTime().divide(duration.toMillis()).toMillis() * 100.0);
+					System.out.println("getValue: " + trackSlider.getValue());
+					trackProgressBar.setProgress(trackSlider.getValue() / trackSlider.getMax());
+				}
+			});
+			volumeSlider.setValue(100.0);
+			mMediaPlayer.setVolume(volumeSlider.getValue() / 100.0);
+			volumeProgressBar.setProgress(volumeSlider.getValue() / volumeSlider.getMax());
 
 			volumeSlider.valueProperty().addListener(new InvalidationListener() {
 				public void invalidated(Observable ov) {
@@ -199,7 +222,16 @@ public class MainController implements Initializable {
 					}
 				}
 			});
+			volumeSlider.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+				System.out.println("volumeSlider");
+				Double endTime = volumeSlider.getMax();
+				if (!endTime.equals(Double.POSITIVE_INFINITY) || !endTime.equals(Double.NaN)) {
+					mMediaPlayer.setVolume(volumeSlider.getValue() / 100.0);
+					volumeProgressBar.setProgress(volumeSlider.getValue() / volumeSlider.getMax());
+				}
+			});
 		}
+
 	}
 
 	protected void updatetimeTrackBar() {
@@ -216,12 +248,8 @@ public class MainController implements Initializable {
 					trackSlider.setDisable(duration.isUnknown());
 					if (!trackSlider.isDisabled() && duration.greaterThan(Duration.ZERO)
 							&& !trackSlider.isValueChanging()) {
-						trackSlider.setValue(currentTime.divide(duration).toMillis() * 100.0);
+						trackSlider.setValue(currentTime.divide(duration.toMillis()).toMillis() * 100.0);
 						trackProgressBar.setProgress(trackSlider.getValue() / trackSlider.getMax());
-					}
-					if (!volumeSlider.isValueChanging()) {
-						volumeSlider.setValue((int) Math.round(mMediaPlayer.getVolume() * 100));
-						volumeProgressBar.setProgress(volumeSlider.getValue() / volumeSlider.getMax());
 					}
 				}
 			});
@@ -324,14 +352,14 @@ public class MainController implements Initializable {
 	private void initAllPlaylist() {
 		hideAddTracksToPl();
 		CustomHBox library = new CustomHBox(libVBox);
-		
+
 		allTracks = library.getTracks();
 		tableTracks.setItems(allTracks);
 
 		playList = FXCollections.observableArrayList();
 		lvPlaylists.setItems(playList);
 		lvPlaylists.setPadding(new Insets(2, 0, 2, 15));
-		
+
 		library.setOnMouseClicked(e -> {
 			lvPlaylists.getSelectionModel().clearSelection();
 			library.setSelected(true);
