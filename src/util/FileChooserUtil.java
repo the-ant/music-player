@@ -53,7 +53,7 @@ public class FileChooserUtil {
 		ObservableList<Track> listTrack = null;
 		List<File> filesChooser = readFiles(primaryStage);
 		
-		if (filesChooser.size() > 0) {
+		if (filesChooser != null && filesChooser.size() > 0) {
 			dataAccess.filterExistFiles(filesChooser);
 			listTrack = MetadataParser.getMetadataTracks(filesChooser);
 		}

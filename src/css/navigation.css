@@ -4,6 +4,10 @@
     -fx-pref-width: 1.0px;
 }
 
+.table-row-cell{ 
+    -fx-table-cell-border-color: transparent;
+}
+
 #tableTracks .column-header {
     -fx-background-color: white;
     -fx-font-family: "Avenir", sans-serif;
@@ -27,7 +31,7 @@
 }
 
 #lvPlaylists .list-cell:filled:focused:selected {
-    -fx-background-color: rgb(166.0, 158.0, 255.0);
+    -fx-background-color: rgb(205, 204, 252);
     -fx-background-insets: 0.0, 1.0, 2.0;
 }
 
@@ -43,16 +47,9 @@
   -fx-padding: 0.0;
 }
 
-.list-cell:default {
-	-fx-graphic: url('../icons/ic_playlist_black.png');
-    -fx-text-fill: black;
-    -fx-background-color: transparent;
-}
-
 .list-cell:selected {
-	-fx-graphic: url('../icons/ic_playlist_white.png');
+	-fx-graphic: url('../icons/ic_playlist.png');
     -fx-text-fill: white;
-    -fx-background-color: rgb(166.0, 158.0, 255.0);
+    -fx-background-color: rgb(205, 204, 252);
 }
-
 

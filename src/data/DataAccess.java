@@ -38,6 +38,8 @@ public class DataAccess {
 	private static final String PLAYLISTS = "playlists";
 	private static final String COUNTER = "counter";
 	private static final String LIBRARY = "library";
+	private static final String PL_CONTENT = "content";
+	private static final String PL_NAMES = "names";
 
 	private DataAccess() {
 		createLibrary();
@@ -52,14 +54,17 @@ public class DataAccess {
 	}
 
 	public ObservableMap<String, ObservableList<Playlist>> getMapPlaylists() {
-		ObservableList<Playlist> playlists = FXCollections.observableArrayList();
+//		ObservableList<Playlist> playlists = FXCollections.observableArrayList();
 
 		JSONObject obj = parseJSONObject();
 		if (obj != null) {
-			JSONObject plObj = (JSONObject) obj.get(PLAYLISTS);
-			
+//			JSONObject plObj = (JSONObject) obj.get(PLAYLISTS);
 		}
 		return null;
+	}
+
+	public void createPlaylist() {
+		
 	}
 
 	public ObservableList<Track> getTracksOfLib() {
@@ -262,7 +267,7 @@ public class DataAccess {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void createLibrary() {
+	private void createLibrary() {
 		File directory = new File(getPathFolderData());
 		if (!directory.exists()) {
 			directory.mkdir();
@@ -276,7 +281,12 @@ public class DataAccess {
 			obj.put(TRACKS, tracks);
 
 			JSONObject playlists = new JSONObject();
+			JSONArray content = new JSONArray();
+			playlists.put(PL_CONTENT, content);
+			JSONArray names = new JSONArray();
+			playlists.put(PL_NAMES, names);
 			obj.put(PLAYLISTS, playlists);
+			
 
 			JSONArray library = new JSONArray();
 			obj.put(LIBRARY, library);

@@ -16,7 +16,6 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
 <BorderPane fx:id="root" prefHeight="680.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
 	<top>
 		<VBox prefHeight="65.0" prefWidth="761.0" BorderPane.alignment="CENTER">
@@ -163,63 +162,13 @@
 		</GridPane>
 	</bottom>
 	<center>
-		<SplitPane fx:id="splitPane" dividerPositions="0.1" stylesheets="@../css/navigation.css">
+		<SplitPane fx:id="splitPane">
 			<items>
-				<AnchorPane fx:id="navigationAnchorPane" maxWidth="350.0" style="-fx-background-color: white;">
-					<children>
-						<BorderPane minWidth="-Infinity" prefHeight="522.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-							<top>
-								<VBox fx:id="libVBox" BorderPane.alignment="CENTER">
-									<children>
-										<Label text="Library" textFill="#909090">
-											<font>
-												<Font name="System Bold" size="14.0" />
-											</font>
-											<VBox.margin>
-												<Insets bottom="5.0" left="15.0" top="5.0" />
-											</VBox.margin>
-										</Label>
-									</children>
-								</VBox>
-							</top>
-							<center>
-								<BorderPane fx:id="playlistsBorderPane">
-									<top>
-										<Label text="Playlists" textFill="#909090" BorderPane.alignment="CENTER_LEFT">
-											<font>
-												<Font name="System Bold" size="14.0" />
-											</font>
-											<BorderPane.margin>
-												<Insets bottom="5.0" left="15.0" top="10.0" />
-											</BorderPane.margin>
-										</Label>
-									</top>
-									<BorderPane.margin>
-										<Insets bottom="-1.0" />
-									</BorderPane.margin>
-                           <center>
-                              <ListView fx:id="lvPlaylists" prefHeight="200.0" prefWidth="200.0" stylesheets="@../css/navigation.css" BorderPane.alignment="CENTER_LEFT" />
-                           </center>
-								</BorderPane>
-							</center>
-							<bottom>
-								<AnchorPane style="-fx-border-radius: 1; -fx-border-color: rgb(216, 212, 212);" BorderPane.alignment="CENTER">
-									<children>
-										<FontAwesomeIconView fx:id="newPlaylist" fill="#aea8a8" glyphName="PLUS" size="18" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="5.0">
-										</FontAwesomeIconView>
-									</children>
-									<BorderPane.margin>
-										<Insets bottom="-1.0" left="-1.0" right="-1.0" />
-									</BorderPane.margin>
-								</AnchorPane>
-							</bottom>
-						</BorderPane>
-					</children>
-				</AnchorPane>
-				<AnchorPane>
+				<AnchorPane stylesheets="@../css/navigation.css">
 					<children>
 						<TableView fx:id="tableTracks" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="-1.0" BorderPane.alignment="CENTER">
 							<columns>
+                        <TableColumn maxWidth="50.0" minWidth="45.0" prefWidth="75.0" />
 								<TableColumn fx:id="tcName" maxWidth="500.0" minWidth="100.0" prefWidth="300.0" text="Name" />
 								<TableColumn fx:id="tcArtist" maxWidth="300.0" minWidth="70.0" prefWidth="200.0" text="Artist" />
 								<TableColumn fx:id="tcAlbum" maxWidth="300.0" minWidth="70.0" prefWidth="200.0" text="Album" />
@@ -235,57 +184,113 @@
 							</columnResizePolicy>
 						</TableView>
 					</children>
+					<BorderPane.margin>
+						<Insets bottom="-1.0" top="-1.0" />
+					</BorderPane.margin>
 				</AnchorPane>
 			</items>
 			<BorderPane.margin>
-				<Insets bottom="-1.0" left="-1.0" right="-1.0" top="-1.0" />
+				<Insets bottom="-1.0" top="-1.0" />
 			</BorderPane.margin>
 		</SplitPane>
 	</center>
-   <right>
-      <AnchorPane fx:id="addTracksAP">
-         <children>
-            <BorderPane prefHeight="512.0" prefWidth="373.0" style="-fx-border-color: rgb(216, 212, 212);" stylesheets="@../css/newpl.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
-               <BorderPane.margin>
-                  <Insets bottom="-1.0" left="-1.0" right="-1.0" top="-1.0" />
-               </BorderPane.margin>
-               <top>
-                  <GridPane prefHeight="58.0" prefWidth="371.0" style="-fx-border-color: rgb(216, 212, 212);" BorderPane.alignment="CENTER">
-                    <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                      <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                     <children>
-                        <Button fx:id="doneBtn" mnemonicParsing="false" onMousePressed="#onDoneAddTracksToPl" prefHeight="22.0" prefWidth="105.0" text="Done" textFill="WHITE" GridPane.columnIndex="1">
-                           <GridPane.margin>
-                              <Insets right="10.0" />
-                           </GridPane.margin>
-                        </Button>
-                        <Text fx:id="namePl" fill="#7c7c7c" strokeType="OUTSIDE" strokeWidth="0.0" text="Playlist" wrappingWidth="171.13671875">
-                           <GridPane.margin>
-                              <Insets left="10.0" />
-                           </GridPane.margin>
-                           <font>
-                              <Font name="Candara" size="24.0" />
-                           </font>
-                        </Text>
-                     </children>
-                     <BorderPane.margin>
-                        <Insets left="-1.0" right="-1.0" top="-1.0" />
-                     </BorderPane.margin>
-                  </GridPane>
-               </top>
-               <center>
-                  <ListView fx:id="lvAddTracksToPl" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-               </center>
-            </BorderPane>
-         </children>
-         <BorderPane.margin>
-            <Insets bottom="-1.0" top="-1.0" />
-         </BorderPane.margin>
-      </AnchorPane>
-   </right>
+	<right>
+		<AnchorPane fx:id="addTracksAP">
+			<children>
+				<BorderPane prefHeight="512.0" prefWidth="373.0" style="-fx-border-color: rgb(216, 212, 212);" stylesheets="@../css/newpl.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
+					<BorderPane.margin>
+						<Insets bottom="-1.0" left="-1.0" right="-1.0" top="-1.0" />
+					</BorderPane.margin>
+					<top>
+						<GridPane prefHeight="58.0" prefWidth="371.0" style="-fx-border-color: rgb(216, 212, 212);" BorderPane.alignment="CENTER">
+							<columnConstraints>
+								<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+								<ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+							</columnConstraints>
+							<rowConstraints>
+								<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+							</rowConstraints>
+							<children>
+								<Button fx:id="doneBtn" mnemonicParsing="false" onMousePressed="#onDoneAddTracksToPl" prefHeight="22.0" prefWidth="105.0" text="Done" textFill="WHITE" GridPane.columnIndex="1">
+									<GridPane.margin>
+										<Insets right="10.0" />
+									</GridPane.margin>
+								</Button>
+								<Text fx:id="namePl" fill="#7c7c7c" strokeType="OUTSIDE" strokeWidth="0.0" text="Playlist" wrappingWidth="171.13671875">
+									<GridPane.margin>
+										<Insets left="10.0" />
+									</GridPane.margin>
+									<font>
+										<Font name="Candara" size="24.0" />
+									</font>
+								</Text>
+							</children>
+							<BorderPane.margin>
+								<Insets left="-1.0" right="-1.0" top="-1.0" />
+							</BorderPane.margin>
+						</GridPane>
+					</top>
+					<center>
+						<ListView fx:id="lvAddTracksToPl" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+					</center>
+				</BorderPane>
+			</children>
+			<BorderPane.margin>
+				<Insets bottom="-1.0" left="-1.0" right="-1.0" top="-1.0" />
+			</BorderPane.margin>
+		</AnchorPane>
+	</right>
+	<left>
+		<AnchorPane fx:id="navigationAnchorPane" maxWidth="350.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
+			<children>
+				<BorderPane minWidth="-Infinity" prefHeight="522.0" prefWidth="280.0" style="-fx-border-color: rgb(206.0, 204.0, 204.0);" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="-1.0">
+					<top>
+						<VBox fx:id="libVBox" BorderPane.alignment="CENTER">
+							<children>
+								<Label text="Library" textFill="#909090">
+									<font>
+										<Font name="System Bold" size="14.0" />
+									</font>
+									<VBox.margin>
+										<Insets bottom="5.0" left="15.0" top="5.0" />
+									</VBox.margin>
+								</Label>
+							</children>
+						</VBox>
+					</top>
+					<center>
+						<BorderPane fx:id="playlistsBorderPane">
+							<top>
+								<Label text="Playlists" textFill="#909090" BorderPane.alignment="CENTER_LEFT">
+									<font>
+										<Font name="System Bold" size="14.0" />
+									</font>
+									<BorderPane.margin>
+										<Insets bottom="5.0" left="15.0" top="10.0" />
+									</BorderPane.margin>
+								</Label>
+							</top>
+							<BorderPane.margin>
+								<Insets bottom="-1.0" />
+							</BorderPane.margin>
+							<center>
+								<ListView fx:id="lvPlaylists" prefHeight="417.0" prefWidth="232.0" stylesheets="@../css/navigation.css" BorderPane.alignment="CENTER_LEFT" />
+							</center>
+						</BorderPane>
+					</center>
+					<bottom>
+						<AnchorPane style="-fx-border-radius: 1; -fx-border-color: rgb(216, 212, 212);" BorderPane.alignment="CENTER">
+							<children>
+								<FontAwesomeIconView fx:id="newPlaylist" fill="#aea8a8" glyphName="PLUS" onMousePressed="#onCreateNewPl" size="18" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="5.0">
+								</FontAwesomeIconView>
+							</children>
+							<BorderPane.margin>
+								<Insets bottom="-1.0" left="-1.0" right="-1.0" />
+							</BorderPane.margin>
+						</AnchorPane>
+					</bottom>
+				</BorderPane>
+			</children>
+		</AnchorPane>
+	</left>
 </BorderPane>

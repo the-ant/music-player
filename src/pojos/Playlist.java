@@ -5,21 +5,13 @@ import javafx.collections.ObservableList;
 
 public class Playlist {
 
+	private int id;
 	private String name;
-	private boolean selected = false;
 	private ObservableList<Track> tracks;
 	private DataAccess dataAccess = DataAccess.getInstance();
 
 	public Playlist() {
-		
-	}
-
-	public void setSelected(boolean selected) {
-		this.selected = selected;
-	}
-	
-	public boolean isSelected() {
-		return selected;
+		dataAccess.createPlaylist();
 	}
 
 	public String getName() {
@@ -28,5 +20,21 @@ public class Playlist {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public ObservableList<Track> getTracks() {
+		return tracks;
+	}
+
+	public void setTracks(ObservableList<Track> tracks) {
+		this.tracks = tracks;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 }

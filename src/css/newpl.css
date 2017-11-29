@@ -14,6 +14,7 @@
     -fx-font-size: 12px;
     -fx-padding: 10 20 10 20;
 }
+
 #doneBtn:focused:pressed {
     -fx-background-color: rgb(25, 29, 34);
     -fx-background-radius: 5,4,3,5;

@@ -2,6 +2,7 @@ package view;
 
 import data.DataAccess;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -20,6 +21,10 @@ public class CustomHBox extends HBox{
 	private Label nameLib;
 	private ObservableList<Track> tracks;
 	private DataAccess dataAccess = DataAccess.getInstance();
+	
+
+	PseudoClass LibDef = PseudoClass.getPseudoClass("lib_def");
+	PseudoClass selected = PseudoClass.getPseudoClass("lib_selected");
 
 	public CustomHBox(VBox libVBox) {
 		super();
@@ -57,7 +62,6 @@ public class CustomHBox extends HBox{
 	}
 
 	public void setSelected(boolean isSelected) {
-		getChildren().removeAll(imgLib, nameLib);
 		if (isSelected) {
 			imgLib = new ImageView(new Image("/icons/ic_library_white.png"));
 			nameLib.setTextFill(Color.WHITE);
@@ -67,7 +71,6 @@ public class CustomHBox extends HBox{
 			nameLib.setTextFill(Color.BLACK);
 			setStyle("-fx-background-color: white");
 		}
-		getChildren().addAll(imgLib, nameLib);
 	}
 
 	public ObservableList<Track> getTracks() {
