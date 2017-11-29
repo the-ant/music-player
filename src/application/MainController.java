@@ -326,6 +326,12 @@ public class MainController implements Initializable {
 
 			Playlist selectedItem = lvPlaylists.getSelectionModel().getSelectedItem();
 			
+			for (Playlist pl : lvPlaylists.getItems()) {
+				if (selectedItem.getId() != pl.getId()) {
+					System.out.println("cdsadas");
+				}
+			}
+			
 		});
 
 		lvPlaylists.setCellFactory(lv -> new CustomListCell());
