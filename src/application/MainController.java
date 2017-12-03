@@ -115,6 +115,16 @@ public class MainController implements Initializable{
 		initControllSong();
 		createSeachPopup();
 		search();
+		Main.getPrimaryStage().xProperty().addListener((observable, oldValue, newValue) -> {
+			if (searchPopup.isShowing() && !searchHideAnimation.getStatus().equals(Animation.Status.RUNNING)) {
+				searchHideAnimation.play();
+			}
+		});
+		Main.getPrimaryStage().yProperty().addListener((observable, oldValue, newValue) -> {
+			if (searchPopup.isShowing() && !searchHideAnimation.getStatus().equals(Animation.Status.RUNNING)) {
+				searchHideAnimation.play();
+			}
+		});
 	}
 
 	private void createSeachPopup() {
@@ -165,7 +175,18 @@ public class MainController implements Initializable{
 		tfSearch.setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				showSearchResults(listSong);
+				if (tfSearch.getText().isEmpty()) {
+					searchHideAnimation.play();
+				} else {
+					String formatNewValue = deAccent(tfSearch.getText());
+					Search.search(formatNewValue, formatListSong);
+				}
+			}
+		});
+		tableTracks.setOnMousePressed(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				searchHideAnimation.play();
 			}
 		});
 		Search.hasResultsProperty().addListener((observable, hadResults, hasResults) -> {
@@ -235,11 +256,9 @@ public class MainController implements Initializable{
 			VBox.setMargin(lbAlert, new Insets(10,10,10,10));
 		}
 		if (!searchPopup.isShowing()) {
-			//Stage stage = Main.getPrimaryStage();
-//			searchPopup.setX(stage.getX() + 890);
-//			searchPopup.setY(stage.getY() + 90);
-			searchPopup.setX(tfSearch.getLayoutX() + 200);
-			searchPopup.setY(tfSearch.getLayoutY() + 122);
+			Stage stage = Main.getPrimaryStage();
+			searchPopup.setX(stage.getX() + 890);
+			searchPopup.setY(stage.getY() + 90);
 			searchPopup.show();
 			searchShowAnimation.play();
 		}
