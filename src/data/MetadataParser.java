@@ -56,9 +56,12 @@ public class MetadataParser {
 			Tag tag = audioFile.getTag();
 			if (!tag.isEmpty()) {
 				parseBaseMetadata(file, track, tag);
-				track.setCoverImage(getCoverBytes(tag).get());
+				Optional<byte[]> coverByte = getCoverBytes(tag);
+				if (coverByte.isPresent()) {
+					track.setCoverImage(getCoverBytes(tag).get());
+				}
 			} else {
-				track.setName(file.getName());
+				track.setName(file.getName().substring(0, file.getName().length() - 3));
 			}
 		} catch (IOException | CannotReadException | ReadOnlyFileException | TagException
 				| InvalidAudioFrameException e) {
@@ -108,7 +111,7 @@ public class MetadataParser {
 	}
 
 	public static Optional<Tag> getAudioTag(String filePath) {
-		Optional<Tag> optionalTag =  null;
+		Optional<Tag> optionalTag =  Optional.empty();
 		File file = null;
 		try {
 			file = new File(new URI(filePath));

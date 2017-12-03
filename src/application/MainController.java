@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 
+import org.apache.commons.io.FilenameUtils;
+
 import data.DataAccess;
 import data.MetadataParser;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -54,6 +56,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import pojos.Playlist;
 import pojos.Track;
+import util.ControllerPlaySong;
 import util.DialogUtil;
 import util.DurationUtil;
 import util.FileChooserUtil;
@@ -62,6 +65,7 @@ import util.MenuUtil;
 import util.PlaceHolderUtil;
 import view.CustomListCell;
 import view.CustomListCellNewPl;
+import view.CustomSearch;
 
 public class MainController implements Initializable {
 	@FXML
@@ -106,13 +110,13 @@ public class MainController implements Initializable {
 	private Label namePlaylist, totalTracksPl;
 
 	private ObservableList<Playlist> playlists;
-	private Stage primaryStage = Main.getPrimaryStage();
+	private static Stage primaryStage = Main.getPrimaryStage();
 	private Media mMedia;
 	private MediaPlayer mMediaPlayer;
 	private Track playingTrack;
 	private DataAccess mData = DataAccess.getInstance();
-	private static final DataFormat dragTracksFormat = new DataFormat("tracks");
 
+	private static final DataFormat dragTracksFormat = new DataFormat("tracks");
 	public static final int SONG_DEFAULT = 0;
 	public static final int SONG_REPEAT = SONG_DEFAULT + 1;
 	public static final int SONG_RANDOM = SONG_REPEAT + 1;
@@ -124,6 +128,14 @@ public class MainController implements Initializable {
 		initAllPlaylist();
 		initTableSong();
 		initControllSong();
+		initSerach();
+	}
+
+	private void initSerach() {
+		CustomSearch customSearch = new CustomSearch(primaryStage, tableTracks, tfSearch);
+		customSearch.createSeachPopup();
+		customSearch.search();
+		customSearch.init();
 	}
 
 	private void initTableSong() {
@@ -160,11 +172,6 @@ public class MainController implements Initializable {
 			// }*/
 			row.contextMenuProperty()
 					.bind(Bindings.when(row.emptyProperty()).then((ContextMenu) null).otherwise(contextMenu));
-
-			row.setOnMouseClicked(e -> {
-				if (e.getButton() == MouseButton.SECONDARY && !row.isEmpty()) {
-				}
-			});
 
 			row.setOnMouseClicked(e -> onDoubleClickToPlayTrack(e, row));
 			return row;
@@ -372,7 +379,19 @@ public class MainController implements Initializable {
 		if (mMediaPlayer != null) {
 			mMediaPlayer.stop();
 		}
-		mMedia = new Media(song.getLocation());
+
+		File file = null;
+		try {
+			file = new File(new URI(song.getLocation()));
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+
+		if (FilenameUtils.getExtension(file.getName()).equals("wma")) {
+			mMedia = new Media(ControllerPlaySong.conver(song.getLocation().substring(6)));
+		} else {
+			mMedia = new Media(song.getLocation());
+		}
 		mMediaPlayer = new MediaPlayer(mMedia);
 		mMediaPlayer.setAutoPlay(true);
 

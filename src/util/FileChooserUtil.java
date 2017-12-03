@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
@@ -23,14 +24,17 @@ public class FileChooserUtil {
 	private static List<String> validFiles = new ArrayList<>(Arrays.asList("mp3", "m4a", "wma", "wav"));
 	private static DataAccess dataAccess = DataAccess.getInstance();
 
-	private static void filterFiles(List<File> list) {
+	private static List<File> filterFiles(List<File> list) {
+		List<File> result = new ArrayList<>();
 		if (list != null) {
-			for (int i = 0; i < list.size(); i++) {
-				String ext = FilenameUtils.getExtension(list.get(i).getName());
-				if (!validFiles.contains(ext))
-					list.remove(i);
+			for (Iterator<File> iter = list.listIterator(); iter.hasNext();) {
+				File file = iter.next();
+				String ext = FilenameUtils.getExtension(file.getName());
+				if (validFiles.contains(ext))
+					result.add(file);
 			}
 		}
+		return result;
 	}
 
 	public static List<File> readFiles(Stage stage) {
@@ -45,8 +49,7 @@ public class FileChooserUtil {
 
 		fc.getExtensionFilters().addAll(allFilter, mp3Filter, m4aFilter, wavFilter, wmaFilter);
 		list = fc.showOpenMultipleDialog(stage);
-		filterFiles(list);
-		return list;
+		return filterFiles(list);
 	}
 
 	public static ObservableList<Track> getTracksChooser(Stage primaryStage) {
@@ -62,7 +65,7 @@ public class FileChooserUtil {
 
 	public static ObservableList<Track> getTracksByDragFiles(List<File> files) {
 		ObservableList<Track> listTrack = null;
-		filterFiles(files);
+		files = filterFiles(files);
 
 		if (files != null && files.size() > 0) {
 			dataAccess.filterExistFiles(files);
@@ -70,7 +73,7 @@ public class FileChooserUtil {
 		}
 		return listTrack;
 	}
-	
+
 	public static File getFileChooser(Stage stage, Track track) throws URISyntaxException {
 		FileChooser fc = new FileChooser();
 		fc.setInitialDirectory(Paths.get(new URI(track.getLocation())).getParent().toFile());
@@ -80,10 +83,10 @@ public class FileChooserUtil {
 		ExtensionFilter wavFilter = new FileChooser.ExtensionFilter("WAV files", "*.wav");
 		ExtensionFilter wmaFilter = new FileChooser.ExtensionFilter("WMA files", "*.wma");
 		ExtensionFilter m4aFilter = new FileChooser.ExtensionFilter("M4A files", "*.m4a");
-		
+
 		fc.getExtensionFilters().addAll(allFilter, mp3Filter, m4aFilter, wavFilter, wmaFilter);
 		File result = fc.showOpenDialog(stage);
-		
+
 		if (result != null) {
 			String ext = FilenameUtils.getExtension(result.getName());
 			if (validFiles.contains(ext)) {

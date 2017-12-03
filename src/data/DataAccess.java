@@ -251,16 +251,17 @@ public class DataAccess {
 		String location = (String) trackObj.get("location");
 
 		Optional<Tag> tagOpt = MetadataParser.getAudioTag(location);
-		byte[] coverImage = null;
-		if (!tagOpt.get().isEmpty()) {
-			coverImage = MetadataParser.getCoverBytes(tagOpt.get()).get();
+		if (tagOpt != null && !tagOpt.get().isEmpty()) {
+			Optional<byte[]> coverImageByte = MetadataParser.getCoverBytes(tagOpt.get());
+			if (coverImageByte.isPresent()) {
+				track.setCoverImage(coverImageByte.get());
+			}
 		}
 
 		track.setId(id);
 		track.setSize(size);
 		track.setAlbum(album);
 		track.setArtist(artist);
-		track.setCoverImage(coverImage);
 		track.setTime(durationStr);
 		track.setEncoding(encoding);
 		track.setGenre(genre);
