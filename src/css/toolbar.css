@@ -1,0 +1,11 @@
+
+#libraryBtn {
+	-fx-background-color: rgb(98, 145, 224);
+	-fx-graphic: url('../icons/ic_library_white.png');
+}
+
+#libraryBtn:pressed {
+	-fx-background-color: rgb(81, 120, 186);
+	-fx-graphic: url('../icons/ic_library_white.png');
+}
+

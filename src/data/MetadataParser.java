@@ -41,19 +41,25 @@ public class MetadataParser {
 	public static Track createTrack(File file) {
 		Track track = new Track();
 		try {
+			track.setId(DataAccess.getInstance().getNextTrackId());
+			
 			AudioFile audioFile = AudioFileIO.read(file);
-
 			track.setSize(file.length());
+			
 			Duration duration = Duration.seconds(audioFile.getAudioHeader().getTrackLength());
 			track.setDuration(duration);
+			
 			track.setTime(DurationUtil.formatTime(duration));
 			track.setEncoding(audioFile.getAudioHeader().getEncodingType());
 			track.setLocation(file.toURI().toString());
 
 			Tag tag = audioFile.getTag();
-			parseBaseMetadata(file, track, tag);
-			track.setCoverImage(getCoverBytes(tag));
-
+			if (!tag.isEmpty()) {
+				parseBaseMetadata(file, track, tag);
+				track.setCoverImage(getCoverBytes(tag).get());
+			} else {
+				track.setName(file.getName());
+			}
 		} catch (IOException | CannotReadException | ReadOnlyFileException | TagException
 				| InvalidAudioFrameException e) {
 			e.printStackTrace();
@@ -90,7 +96,7 @@ public class MetadataParser {
 	}
 
 	public static Optional<Tag> getAudioTag(File file) {
-		Optional<Tag> optionalTag;
+		Optional<Tag> optionalTag = Optional.empty();
 		try {
 			AudioFile audioFile = AudioFileIO.read(file);
 			optionalTag = Optional.ofNullable(audioFile.getTag());
@@ -102,14 +108,16 @@ public class MetadataParser {
 	}
 
 	public static Optional<Tag> getAudioTag(String filePath) {
-		Optional<Tag> optionalTag ;
+		Optional<Tag> optionalTag =  null;
 		File file = null;
 		try {
 			file = new File(new URI(filePath));
+			if (file.exists()) {
+				optionalTag = getAudioTag(file);
+			}
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			optionalTag = Optional.empty();
 		}
-		optionalTag = getAudioTag(file);
 		return optionalTag;
 	}
 }

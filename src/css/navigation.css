@@ -1,14 +1,23 @@
 
-#splitPane > .split-pane-divider {
-    -fx-background-color:  rgb(216.0, 212.0, 212.0);
-    -fx-pref-width: 1.0px;
-}
-
 .table-row-cell{ 
     -fx-table-cell-border-color: transparent;
 }
 
-#tableTracks .column-header {
+#tableTracks .scroll-bar:vertical .increment-arrow,
+#tableTracks .scroll-bar:vertical .decrement-arrow,
+#tableTracks .scroll-bar:vertical .increment-button,
+#tableTracks .scroll-bar:vertical .decrement-button {
+    -fx-padding:0.0;
+}
+
+#tableTracks .scroll-bar:horizontal .increment-arrow,
+#tableTracks .scroll-bar:horizontal .decrement-arrow,
+#tableTracks .scroll-bar:horizontal .increment-button,
+#tableTracks .scroll-bar:horizontal .decrement-button {
+    -fx-padding:0.0;
+}
+
+.table-view .column-header {
     -fx-background-color: white;
     -fx-font-family: "Avenir", sans-serif;
     -fx-border-color: rgb(206.0, 204.0, 204.0);
@@ -30,9 +39,13 @@
 	-fx-text-fill: white;
 }
 
-#lvPlaylists .list-cell:filled:focused:selected {
-    -fx-background-color: rgb(205, 204, 252);
+
+
+.list-view:focused .list-cell:filled:focused:selected {
+    -fx-background-color: rgb(166.0, 158.0, 255.0);
     -fx-background-insets: 0.0, 1.0, 2.0;
+    -fx-background: -fx-accent;
+    -fx-text-fill: -fx-selection-bar-text;
 }
 
 #lvPlaylists .scroll-bar:vertical .increment-arrow,
@@ -47,9 +60,5 @@
   -fx-padding: 0.0;
 }
 
-.list-cell:selected {
-	-fx-graphic: url('../icons/ic_playlist.png');
-    -fx-text-fill: white;
-    -fx-background-color: rgb(205, 204, 252);
-}
+
 

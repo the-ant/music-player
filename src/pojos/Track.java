@@ -1,11 +1,13 @@
 package pojos;
 
-import java.util.Optional;
+import java.io.Serializable;
 
 import javafx.util.Duration;
 
-public class Track {
-
+public class Track implements Serializable, Comparable<Track>{
+	
+	private static final long serialVersionUID = -4739161964235915855L;
+	
 	private long id;
 	private long size;
 	private String year;
@@ -15,9 +17,9 @@ public class Track {
 	private String genre;
 	private String location;
 	private String encoding = "";
-	private Optional<byte[]> coverImage;
+	private byte[] coverImage;
 	private String time;
-	private Duration duration = Duration.UNKNOWN;
+	private transient Duration duration = Duration.UNKNOWN;
 
 	public Track() {
 		this.name = "";
@@ -27,11 +29,10 @@ public class Track {
 		this.location = "";
 		this.year = "";
 		this.encoding = "";
-		this.coverImage = Optional.empty();
 	}
 
 	public Track(long id, long size, String year, String time, String name, String artist, String album, String genre,
-			String encoding, String location, Optional<byte[]> cover) {
+			String encoding, String location, byte[] cover) {
 		this.setId(id);
 		this.setAlbum(album);
 		this.setSize(size);
@@ -117,11 +118,11 @@ public class Track {
 		this.location = location;
 	}
 
-	public Optional<byte[]> getCoverImage() {
+	public byte[] getCoverImage() {
 		return coverImage;
 	}
 
-	public void setCoverImage(Optional<byte[]> coverImage) {
+	public void setCoverImage(byte[] coverImage) {
 		this.coverImage = coverImage;
 	}
 
@@ -139,6 +140,14 @@ public class Track {
 
 	public void setDuration(Duration duration) {
 		this.duration = duration;
+	}
+
+	@Override
+	public int compareTo(Track cmpTrack) {
+		if (this.name.charAt(0) > cmpTrack.getName().charAt(0)) {
+			return 1;
+		}
+		return 0;
 	}
 
 }

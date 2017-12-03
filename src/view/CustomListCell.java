@@ -8,7 +8,7 @@ import javafx.scene.text.Font;
 import pojos.Playlist;
 
 public class CustomListCell extends ListCell<Playlist> {
-
+	
 	@Override
 	protected void updateItem(Playlist item, boolean empty) {
 		super.updateItem(item, empty);
