@@ -125,7 +125,6 @@ public class MainController implements Initializable {
 	PseudoClass def = PseudoClass.getPseudoClass("default");
 	PseudoClass selected = PseudoClass.getPseudoClass("selected");
 
-
 	// =============================================================
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -161,7 +160,8 @@ public class MainController implements Initializable {
 			mMediaPlayer.setOnReady(new Runnable() {
 				public void run() {
 					duration = mMediaPlayer.getMedia().getDuration();
-					updatetimeTrackBar();
+					ControllerPlaySong.updatetimeTrackBar(mMediaPlayer, timeUp, timeDown, duration, trackSlider,
+							volumeSlider, trackProgressBar, volumeProgressBar);
 				}
 			});
 
@@ -183,77 +183,17 @@ public class MainController implements Initializable {
 				@Override
 				public void changed(ObservableValue<? extends Duration> observable, Duration oldValue,
 						Duration newValue) {
-						updatetimeTrackBar();
+					ControllerPlaySong.updatetimeTrackBar(mMediaPlayer, timeUp, timeDown, duration, trackSlider,
+							volumeSlider, trackProgressBar, volumeProgressBar);
 				}
 			});
 
-			trackSlider.valueProperty().addListener(new InvalidationListener() {
-				public void invalidated(Observable ov) {
-					if (trackSlider.isValueChanging()) {
-						// multiply duration by percentage calculated by slider position
-						if (duration != null) {
-							mMediaPlayer.seek(duration.multiply(trackSlider.getValue() / 100.0));
-						}
-							updatetimeTrackBar();
-					}
-				}
-			});
+			ControllerPlaySong.trackSlider(mMediaPlayer, trackProgressBar, trackSlider, duration, volumeSlider, timeUp,
+					timeDown, volumeProgressBar);
 
-			trackSlider.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-				System.out.println("trackSlider");
-				if (duration != null) {
-					System.out.println("getValue: " + trackSlider.getValue());
-					mMediaPlayer.seek(duration.multiply(trackSlider.getValue() / 100.0));
-					System.out.println("duration: " + duration.multiply(trackSlider.getValue() / 100.0));
-					trackSlider.setValue(mMediaPlayer.getCurrentTime().divide(duration.toMillis()).toMillis() * 100.0);
-					System.out.println("getValue: " + trackSlider.getValue());
-					trackProgressBar.setProgress(trackSlider.getValue() / trackSlider.getMax());
-				}
-			});
-			volumeSlider.setValue(100.0);
-			mMediaPlayer.setVolume(volumeSlider.getValue() / 100.0);
-			volumeProgressBar.setProgress(volumeSlider.getValue() / volumeSlider.getMax());
-
-			volumeSlider.valueProperty().addListener(new InvalidationListener() {
-				public void invalidated(Observable ov) {
-					if (volumeSlider.isValueChanging()) {
-						mMediaPlayer.setVolume(volumeSlider.getValue() / 100.0);
-						volumeProgressBar.setProgress(volumeSlider.getValue() / volumeSlider.getMax());
-					}
-				}
-			});
-			volumeSlider.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-				System.out.println("volumeSlider");
-				Double endTime = volumeSlider.getMax();
-				if (!endTime.equals(Double.POSITIVE_INFINITY) || !endTime.equals(Double.NaN)) {
-					mMediaPlayer.setVolume(volumeSlider.getValue() / 100.0);
-					volumeProgressBar.setProgress(volumeSlider.getValue() / volumeSlider.getMax());
-				}
-			});
+			ControllerPlaySong.volumeSlider(mMediaPlayer, volumeSlider, volumeProgressBar);
 		}
 
-	}
-
-	protected void updatetimeTrackBar() {
-
-		if (timeUp != null && trackSlider != null && volumeSlider != null && duration != null) {
-			Platform.runLater(new Runnable() {
-				@SuppressWarnings("deprecation")
-				public void run() {
-					Duration currentTime = mMediaPlayer.getCurrentTime();
-
-					timeUp.setText(DurationUtil.formatTime(currentTime));
-					timeDown.setText(DurationUtil.formatTime(duration));
-
-					trackSlider.setDisable(duration.isUnknown());
-					if (!trackSlider.isDisabled() && duration.greaterThan(Duration.ZERO)
-							&& !trackSlider.isValueChanging()) {
-						trackSlider.setValue(currentTime.divide(duration.toMillis()).toMillis() * 100.0);
-						trackProgressBar.setProgress(trackSlider.getValue() / trackSlider.getMax());
-					}
-				}
-			});
-		}
 	}
 
 	private void nextSong() {
