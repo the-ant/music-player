@@ -1,5 +1,8 @@
 package application;
 
+import javafx.geometry.*;
+
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URL;
 import java.text.Normalizer;
@@ -10,9 +13,13 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ForkJoinPool;
 import java.util.regex.Pattern;
 
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.apache.commons.io.FilenameUtils;
+
 
 import data.DataAccess;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -22,36 +29,25 @@ import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 import pojos.Playlist;
 import pojos.Track;
 import util.*;
-
-public class MainController implements Initializable {
+import javafx.animation.*;
+public class MainController implements Initializable{
 	// ===========================Table
 	// Tracks===============================================
 	@FXML
@@ -98,13 +94,14 @@ public class MainController implements Initializable {
 	private Media mMedia;
 	private MediaPlayer mMediaPlayer;
 	private DataAccess mData = DataAccess.getInstance();
-
+	private Stage searchPopup;
 	public static final int SONG_DEFAULT = 0;
 	public static final int SONG_REPEAT = SONG_DEFAULT + 1;
 	public static final int SONG_RANDOM = SONG_REPEAT + 1;
 	private int flagTypeNextSong = SONG_DEFAULT;
 	private Duration duration;
-
+	private static final String DEFAULT_COVER_PATH = "/images/img_default_cover.png";
+	
 	@FXML
 	private TextField tfSearch;
 
@@ -116,34 +113,136 @@ public class MainController implements Initializable {
 		initListSong();
 		initAllNewPlaylist();
 		initControllSong();
+		createSeachPopup();
 		search();
 	}
 
+	private void createSeachPopup() {
+		try {
+			//Stage stage = Main.getPrimaryStage();
+			ListView<Node> view = new ListView<>();
+			view.getStyleClass().add("searchPopup");
+			Stage popup = new Stage();
+			popup.setScene(new Scene(view));
+			popup.initStyle(StageStyle.UNDECORATED);
+			popup.initStyle(StageStyle.TRANSPARENT);
+			popup.initOwner(primaryStage);
+			searchHideAnimation.setOnFinished(x -> popup.hide());
+			popup.show();
+			popup.hide();
+			searchPopup = popup;
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	private Animation searchHideAnimation = new Transition() {
+		{
+			setCycleDuration(Duration.millis(250));
+			setInterpolator(Interpolator.EASE_BOTH);
+		}
+		protected void interpolate(double frac) {
+			searchPopup.setOpacity(1.0 - frac);
+		}
+	};
+	private Animation searchShowAnimation = new Transition() {
+		{
+			setCycleDuration(Duration.millis(250));
+			setInterpolator(Interpolator.EASE_BOTH);
+		}
+		protected void interpolate(double frac) {
+			searchPopup.setOpacity(frac);
+		}
+	};
 	private void search() {
 		ObservableList<Track> formatListSong = formatListSong();
 		tfSearch.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null || !newValue.isEmpty()) {
+			if (newValue != null || newValue != "") {
 				String formatNewValue = deAccent(newValue);
 				Search.search(formatNewValue, formatListSong);
 			}
 		});
+		tfSearch.setOnMousePressed(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				showSearchResults(listSong);
+			}
+		});
 		Search.hasResultsProperty().addListener((observable, hadResults, hasResults) -> {
 			if (hasResults) {
-				List<Long> resultSearching = Search.getResult();
+				List<Track> result = Search.getResult();
 				List<Track> newListSongForSearching = new ArrayList<>();
-				for (Long id : resultSearching) {
+				for (Track resultTrack : result) {
 					for (Track track : listSong) {
-						if (id.equals(track.getId())) {
+						if(track.getId() == resultTrack.getId()) {
 							newListSongForSearching.add(track);
 						}
 					}
 				}
-				ObservableList<Track> trackObservableList = FXCollections.observableList(newListSongForSearching);
-				SortedList<Track> trackSortedList = new SortedList<Track>(trackObservableList);
-				trackSortedList.comparatorProperty().bind(tableTracks.comparatorProperty());
-				tableTracks.setItems(trackSortedList);
+				Platform.runLater(() -> {
+					showSearchResults(newListSongForSearching);
+					primaryStage.toFront();
+				});
 			}
 		});
+	}
+	public void showSearchResults(List<Track> result) {
+		@SuppressWarnings("unchecked")
+		ListView<Node> root =  (ListView<Node>) searchPopup.getScene().getRoot();
+		root.setPrefWidth(295);
+		root.setMaxHeight(300);
+		root.setOrientation(Orientation.VERTICAL);
+		ObservableList<Node> list = FXCollections.observableArrayList();
+		list.clear();
+		if (result.size() > 0) {
+			result.forEach(song -> {
+				HBox cell = new HBox();
+				cell.setAlignment(Pos.CENTER_LEFT);
+				ImageView image = new ImageView();
+				image.setFitHeight(55);
+				image.setFitWidth(55);
+				Image customImage;
+				if (song.getCoverImage() != null) {
+					customImage = new Image(new ByteArrayInputStream(song.getCoverImage().get()));
+
+				} else {
+					customImage = new Image(DEFAULT_COVER_PATH);
+				}
+				image.setImage(customImage);
+				cell.getChildren().add(image);
+				HBox.setMargin(image, new Insets(0, 5, 0, 5));
+				Label lbSongName = new Label(song.getName());
+				lbSongName.setTextOverrun(OverrunStyle.CLIP);
+				lbSongName.getStyleClass().setAll("searchLabel");
+				cell.getChildren().add(lbSongName);
+				HBox.setMargin(lbSongName, new Insets(0, 5, 0, 5));
+				cell.getStyleClass().add("searchResult");
+				cell.setOnMouseClicked(event -> {
+					Track track = listSong.stream().filter(x -> x.getName().equals(song.getName())).findAny().get();
+					ObservableList<Track> newlistSelection = FXCollections.observableArrayList();
+					newlistSelection.add(track);
+					tableTracks.setItems(newlistSelection);
+					tfSearch.setText("");
+					searchHideAnimation.play();
+				});
+				list.add(cell);
+			});
+			root.setItems(list);
+			
+		} else if (list.size() == 0) {
+			Label lbAlert = new Label("No results");
+			list.add(lbAlert);
+			VBox.setMargin(lbAlert, new Insets(10,10,10,10));
+		}
+		if (!searchPopup.isShowing()) {
+			//Stage stage = Main.getPrimaryStage();
+//			searchPopup.setX(stage.getX() + 890);
+//			searchPopup.setY(stage.getY() + 90);
+			searchPopup.setX(tfSearch.getLayoutX() + 200);
+			searchPopup.setY(tfSearch.getLayoutY() + 122);
+			searchPopup.show();
+			searchShowAnimation.play();
+		}
 	}
 	public ObservableList<Track> formatListSong() {
 		for (Track song: tmplistSong) {
@@ -153,7 +252,7 @@ public class MainController implements Initializable {
 		}
 		return tmplistSong;
 	}
-	// transfer vietnamese to normal word.
+	// To transfer Vietnamese to normal style no sign.
 	public static String deAccent(String str) {
 		String nfdNormalizedString = Normalizer.normalize(str, Normalizer.Form.NFD);
 		Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
@@ -172,7 +271,6 @@ public class MainController implements Initializable {
 			}
 		}
 	}
-
 	private void playSong(Track song) {
 		String filePath = song.getLocation();
 		if (filePath != null) {
@@ -240,11 +338,9 @@ public class MainController implements Initializable {
 			});
 		}
 	}
-
 	protected void updatetimeTrackBar() {
 		if (timeUp != null && timeDown != null && trackSlider != null && volumeSlider != null && duration != null) {
 			Platform.runLater(new Runnable() {
-				@SuppressWarnings("deprecation")
 				public void run() {
 					Duration currentTime = mMediaPlayer.getCurrentTime();
 					timeUp.setText(ControllerPlaySong.formatTimeElapsed(currentTime));

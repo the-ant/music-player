@@ -1,0 +1,37 @@
+
+#trackSlider .track {
+    -fx-background-color: null;
+	-fx-background-insets: 0 0 0 0;
+}
+
+#volumeSlider .track {
+    -fx-background-color: null;
+}
+
+#trackProgressBar .bar {
+	-fx-background-color: rgb(166.0, 158.0, 255.0);
+	-fx-background-insets: 0 0 1 0;
+	-fx-background-radius: null;
+}
+
+#volumeProgressBar .bar {
+	-fx-background-color: rgb(166.0, 158.0, 255.0);
+	-fx-background-insets: 1 1 2 1;
+	-fx-background-radius: 0;
+}
+#trackProgressBar .track {
+	-fx-control-inner-background: null;
+	-fx-background-radius: null;
+}
+
+#volumeProgressBar .track {
+	-fx-control-inner-background: rgb(206.0, 204.0, 204.0);
+	-fx-background-insets: 1 1 2 1;
+	-fx-background-radius: 0;
+}
+
+#trackSlider .thumb {
+	-fx-background-color: null;
+	-fx-background-image: url('../icons/ic_sliderthumb.png');
+ 	-fx-background-repeat:no-repeat ;
+}

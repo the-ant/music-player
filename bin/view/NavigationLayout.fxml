@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.fontawesome.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="622.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox fx:id="navigationVBox" prefHeight="76.0" prefWidth="200.0">
+         <children>
+            <Label fx:id="libraryLabel" text="Library" textFill="#909090">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="5.0" left="15.0" top="5.0" />
+               </VBox.margin>
+            </Label>
+         </children>
+      </VBox>
+      <VBox fx:id="playlistsVBox" prefHeight="517.0" prefWidth="200.0">
+         <children>
+            <Label fx:id="libraryLabel1" text="Playlists" textFill="#909090">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="5.0" left="15.0" top="5.0" />
+               </VBox.margin>
+            </Label>
+         </children>
+      </VBox>
+      <Separator maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1.0" prefWidth="200.0" />
+      <FontAwesomeIconView glyphName="PLUS" size="18">
+         <VBox.margin>
+            <Insets bottom="5.0" left="15.0" top="5.0" />
+         </VBox.margin>
+      </FontAwesomeIconView>
+   </children>
+</VBox>
