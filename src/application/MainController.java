@@ -109,19 +109,20 @@ public class MainController implements Initializable {
 	@FXML
 	private Label namePlaylist, totalTracksPl;
 
-	private ObservableList<Playlist> playlists;
 	private static Stage primaryStage = Main.getPrimaryStage();
+	private static final DataFormat dragTracksFormat = new DataFormat("tracks");
+	
+	public static final int SONG_DEFAULT = 0;
+	public static final int SONG_REPEAT = SONG_DEFAULT + 1;
+	public static final int SONG_RANDOM = SONG_REPEAT + 1;
+	
+	private int flagTypeNextSong = SONG_DEFAULT;
+	private Duration duration;
+	private ObservableList<Playlist> playlists;
 	private Media mMedia;
 	private MediaPlayer mMediaPlayer;
 	private Track playingTrack;
 	private DataAccess mData = DataAccess.getInstance();
-
-	private static final DataFormat dragTracksFormat = new DataFormat("tracks");
-	public static final int SONG_DEFAULT = 0;
-	public static final int SONG_REPEAT = SONG_DEFAULT + 1;
-	public static final int SONG_RANDOM = SONG_REPEAT + 1;
-	private int flagTypeNextSong = SONG_DEFAULT;
-	private Duration duration;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -148,7 +149,7 @@ public class MainController implements Initializable {
 
 		setupTableTracks(getPlaylistTracks(0), PlaceHolderUtil.LIB);
 		tableTracks.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
+		
 		tableTracks.setRowFactory(tv -> {
 			TableRow<Track> row = new TableRow<>();
 			ContextMenu contextMenu = new ContextMenu();
@@ -309,6 +310,7 @@ public class MainController implements Initializable {
 		ArrayList<Track> tracks = (ArrayList<Track>) event.getDragboard().getContent(dragTracksFormat);
 		getSelectedPlaylist().getTracks().addAll(tracks);
 		getSelectedPlaylist().setKeysByTracks(tracks);
+		
 		if (tracks.size() > 0) {
 			lvAddTracksToPl.setItems(getSelectedPlaylist().getTracks());
 			Platform.runLater(() -> {
@@ -495,9 +497,9 @@ public class MainController implements Initializable {
 			}
 			break;
 		default:
-			if (getSelectedPlaylist().getTracks().size() == idx + 1) {
+			if (getSelectedPlaylist().getTracks().size() == idx + 1)
 				idx = -1;
-			}
+			
 			tableTracks.getSelectionModel().clearAndSelect(idx + 1);
 			track = tableTracks.getItems().get(idx + 1);
 			if (track != null) {

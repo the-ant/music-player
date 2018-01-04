@@ -12,26 +12,20 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
+import javafx.scene.control.Control;
 import javafx.scene.control.ListView;
-import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import pojos.Track;
-import util.ImageUtil;
+import util.PlaceHolderUtil;
 import util.Search;
 
 public class CustomSearch {
@@ -144,64 +138,45 @@ public class CustomSearch {
 
 	public void showSearchResults(ObservableList<Track> listSong, List<Track> result) {
 		@SuppressWarnings("unchecked")
-		ListView<Node> root = (ListView<Node>) searchPopup.getScene().getRoot();
+		ListView<Track> root = (ListView<Track>) searchPopup.getScene().getRoot();
 		root.setPrefWidth(295);
-		root.setMaxHeight(300);
+		root.setMaxHeight(Control.USE_PREF_SIZE);
+		root.setMinHeight(Control.USE_PREF_SIZE);
 		root.setOrientation(Orientation.VERTICAL);
+		root.setFixedCellSize(61);
+		root.getStylesheets().add(this.getClass().getResource("/css/newpl.css").toExternalForm());
+		root.setCellFactory(lv -> new CustomListCellNewPl());
+		root.setStyle("-fx-border-color:black");
+		root.setPlaceholder(PlaceHolderUtil.createPlaceHolderSearch("No Result", Pos.TOP_CENTER));
 
-		ObservableList<Node> list = FXCollections.observableArrayList();
+		ObservableList<Track> list = FXCollections.observableArrayList();
 		list.clear();
-
-		if (result.size() > 0) {
-			result.forEach(track -> {
-				HBox cell = new HBox();
-				cell.setAlignment(Pos.CENTER_LEFT);
-
-				ImageView image = new ImageView();
-				image.setFitHeight(55);
-				image.setFitWidth(55);
-
-				byte[] coverByte = track.getCoverImage();
-				Image customImage = ImageUtil.setCoverImage(coverByte);
-
-				image.setImage(customImage);
-				cell.getChildren().add(image);
-
-				HBox.setMargin(image, new Insets(0, 5, 0, 5));
-
-				Label lbSongName = new Label(track.getName());
-				lbSongName.setTextOverrun(OverrunStyle.CLIP);
-				lbSongName.getStyleClass().setAll("searchLabel");
-
-				cell.getChildren().add(lbSongName);
-				HBox.setMargin(lbSongName, new Insets(0, 5, 0, 5));
-
-				cell.getStyleClass().add("searchResult");
-				cell.setOnMouseClicked(event -> {
-					Track mTrack = listSong.stream().filter(x -> x.getName().equals(track.getName())).findAny().get();
-					ObservableList<Track> newlistSelection = FXCollections.observableArrayList();
-					newlistSelection.add(mTrack);
-					tableTracks.setItems(newlistSelection);
-					tfSearch.setText("");
-					searchHideAnimation.play();
-				});
-				list.add(cell);
-			});
-			root.setItems(list);
-
-		} else if (list.size() == 0) {
-			Label lbAlert = new Label("No results");
-			list.add(lbAlert);
-			VBox.setMargin(lbAlert, new Insets(10, 10, 10, 10));
+		list.addAll(result);
+		
+		if (list.size() < 0) {
+			root.setPrefHeight(50);
 		}
+
+		root.setOnMouseClicked(e -> {
+			scrollToSelectedItem(root.getSelectionModel().getSelectedItem());
+			searchHideAnimation.play();
+		});
+		root.setItems(list);
+
 		if (!searchPopup.isShowing()) {
-//			searchPopup.setX(primaryStage.getX() + 890);
-//			searchPopup.setY(primaryStage.getY() + 90);
-			searchPopup.setX(tfSearch.getLayoutX() + 85);
-			searchPopup.setY(tfSearch.getLayoutY() + 90);
+			searchPopup.setX(primaryStage.getX() + 905);
+			searchPopup.setY(primaryStage.getY() + 95);
 			searchPopup.show();
 			searchShowAnimation.play();
 		}
+	}
+
+	private void scrollToSelectedItem(Track track) {
+		Platform.runLater(() -> {
+			tableTracks.getSelectionModel().clearSelection();
+			tableTracks.scrollTo(track);
+			tableTracks.getSelectionModel().select(track);
+		});
 	}
 
 	public ObservableList<Track> formatListSong() {
@@ -214,7 +189,6 @@ public class CustomSearch {
 		return tmpListSong;
 	}
 
-	// To transfer Vietnamese to normal style no sign.
 	public static String deAccent(String str) {
 		String nfdNormalizedString = Normalizer.normalize(str, Normalizer.Form.NFD);
 		Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");

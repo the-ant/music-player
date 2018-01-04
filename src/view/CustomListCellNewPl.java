@@ -19,7 +19,6 @@ public class CustomListCellNewPl extends ListCell<Track> {
 		if (empty) {
 			setText(null);
 			setGraphic(null);
-
 		} else {
 
 			HBox root = new HBox();
@@ -28,7 +27,7 @@ public class CustomListCellNewPl extends ListCell<Track> {
 
 			Label num = new Label("" + (getIndex() + 1));
 			num.setFont(new Font("Microsoft Sans Serif", 14));
-			num.setPrefWidth(30);
+			num.setPrefWidth(20);
 
 			ImageView cover = new ImageView(ImageUtil.setCoverImage(item.getCoverImage()));
 			cover.setFitWidth(50);

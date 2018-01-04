@@ -28,5 +28,18 @@ public class PlaceHolderUtil {
 		placeHolder.setAlignment(position);
 		return placeHolder;
 	}
+
+	public static VBox createPlaceHolderSearch(String description, Pos position) {
+		VBox placeHolder = new VBox();
+		placeHolder.setPadding(new Insets(20));
+		
+		Label txtPlaceHolder = new Label(description);
+		txtPlaceHolder.setAlignment(Pos.CENTER);
+		txtPlaceHolder.setFont(new Font("System", 18));
+		
+		placeHolder.getChildren().add(txtPlaceHolder);
+		placeHolder.setAlignment(position);
+		return placeHolder;
+	}
 	
 }
