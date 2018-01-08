@@ -49,14 +49,40 @@ public class DataAccess {
 		return DataAccessHelper.INSTANCE;
 	}
 
-	public ObservableMap<String, ObservableList<Playlist>> getMapPlaylists() {
-		// ObservableList<Playlist> playlists = FXCollections.observableArrayList();
-
+	@SuppressWarnings("unchecked")
+	public void renamePlaylist(Playlist selectedPlaylist) {
 		JSONObject obj = parseJSONObject();
 		if (obj != null) {
-			// JSONObject plObj = (JSONObject) obj.get(PLAYLISTS);
+			JSONArray playlistsArray = (JSONArray) obj.get(PLAYLISTS);
+			for (int i = 0; i < playlistsArray.size(); i++) {
+				JSONObject playlistObj = (JSONObject) playlistsArray.get(i);
+				long id = (long) playlistObj.get("id");
+				if (id == selectedPlaylist.getId()) {
+					playlistObj.put("name", selectedPlaylist.getName());
+					obj.put(PLAYLISTS, playlistsArray);
+					writeJSONToFile(obj);
+					break;
+				}
+			}
 		}
-		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public void deletePlaylist(Playlist selectedPlaylist) {
+		JSONObject obj = parseJSONObject();
+		if (obj != null) {
+			JSONArray playlistsArray = (JSONArray) obj.get(PLAYLISTS);
+			for (int i = 0; i < playlistsArray.size(); i++) {
+				JSONObject playlistObj = (JSONObject) playlistsArray.get(i);
+				long id = (long) playlistObj.get("id");
+				if (id == selectedPlaylist.getId()) {
+					playlistsArray.remove(i);
+					obj.put(PLAYLISTS, playlistsArray);
+					writeJSONToFile(obj);
+					break;
+				}
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -69,7 +95,6 @@ public class DataAccess {
 				long id = (long) playlistObj.get("id");
 				if (id == playlist.getId()) {
 					playlistsArray.remove(i);
-
 					JSONArray keyArray = (JSONArray) playlistObj.get("keys");
 					keyArray.removeAll(keyArray);
 					keyArray.addAll(playlist.getKeys());
@@ -85,7 +110,7 @@ public class DataAccess {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void updatePlaylists(Playlist newPl) {
+	public void updatePlaylist(Playlist newPl) {
 		JSONObject obj = parseJSONObject();
 		if (obj != null) {
 			long nextPlaylistId = (long) obj.get(NEXT_PLAYLIST_ID);

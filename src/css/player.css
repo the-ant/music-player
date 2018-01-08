@@ -17,21 +17,26 @@
 #volumeProgressBar .bar {
 	-fx-background-color: rgb(166.0, 158.0, 255.0);
 	-fx-background-insets: 1 1 2 1;
-	-fx-background-radius: 0;
+	-fx-background-radius: 14;
 }
 #trackProgressBar .track {
-	-fx-control-inner-background: null;
+	-fx-control-inner-background: rgb(206.0, 204.0, 204.0);
 	-fx-background-radius: null;
 }
 
 #volumeProgressBar .track {
 	-fx-control-inner-background: rgb(206.0, 204.0, 204.0);
 	-fx-background-insets: 1 1 2 1;
-	-fx-background-radius: 0;
+	-fx-background-radius: 14;
 }
 
 #trackSlider .thumb {
 	-fx-background-color: null;
 	-fx-background-image: url('../icons/ic_sliderthumb.png');
+ 	-fx-background-repeat:no-repeat ;
+}
+
+#volumeSlider .thumb {
+	-fx-background-color: #f7f7f7;
  	-fx-background-repeat:no-repeat ;
 }

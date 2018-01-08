@@ -14,6 +14,7 @@ import org.apache.commons.io.FilenameUtils;
 import data.DataAccess;
 import data.MetadataParser;
 import javafx.collections.ObservableList;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
@@ -50,6 +51,38 @@ public class FileChooserUtil {
 		fc.getExtensionFilters().addAll(allFilter, mp3Filter, m4aFilter, wavFilter, wmaFilter);
 		list = fc.showOpenMultipleDialog(stage);
 		return filterFiles(list);
+	}
+
+	private static List<File> readFilesFromFolder(Stage primaryStage) {
+		List<File> list = new ArrayList<>();
+		DirectoryChooser dc = new DirectoryChooser();
+		File folder = dc.showDialog(primaryStage);
+		
+		if (folder != null) {
+			readFilesFromFolder(list, folder);
+		}
+		return filterFiles(list);
+	}
+	
+	public static void readFilesFromFolder(List<File> list, File folder){
+		for (File file : folder.listFiles()) {
+			if (file.isDirectory()) {
+				readFilesFromFolder(list, file);
+			} else {
+				list.add(file);
+			}
+		}
+	}
+	
+	public static ObservableList<Track> addTracksFromFolder(Stage primaryStage){
+		ObservableList<Track> listTrack = null;
+		List<File> filesChooser = readFilesFromFolder(primaryStage);
+
+		if (filesChooser != null && filesChooser.size() > 0) {
+			dataAccess.filterExistFiles(filesChooser);
+			listTrack = MetadataParser.getMetadataTracks(filesChooser);
+		}
+		return listTrack;
 	}
 
 	public static ObservableList<Track> getTracksChooser(Stage primaryStage) {

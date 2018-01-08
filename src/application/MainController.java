@@ -27,6 +27,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SelectionMode;
@@ -41,6 +43,9 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
@@ -108,14 +113,16 @@ public class MainController implements Initializable {
 	private BorderPane titlePlaylistBorderPane;
 	@FXML
 	private Label namePlaylist, totalTracksPl;
+	@FXML
+	private MenuBar menuMain;
 
 	private static Stage primaryStage = Main.getPrimaryStage();
 	private static final DataFormat dragTracksFormat = new DataFormat("tracks");
-	
+
 	public static final int SONG_DEFAULT = 0;
 	public static final int SONG_REPEAT = SONG_DEFAULT + 1;
 	public static final int SONG_RANDOM = SONG_REPEAT + 1;
-	
+
 	private int flagTypeNextSong = SONG_DEFAULT;
 	private Duration duration;
 	private ObservableList<Playlist> playlists;
@@ -124,15 +131,79 @@ public class MainController implements Initializable {
 	private Track playingTrack;
 	private DataAccess mData = DataAccess.getInstance();
 
+	private MenuItem play, stop, previous, next;
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		initAllPlaylist();
 		initTableSong();
 		initControllSong();
-		initSerach();
+		initSearch();
+		initMenu();
 	}
 
-	private void initSerach() {
+	private void initMenu() {
+		createMainMenu();
+	}
+
+	private void createMainMenu() {
+		Menu file = new Menu("File");
+		Menu control = new Menu("Control");
+		Menu help = new Menu("Help");
+
+		/*
+		 * File
+		 */
+		MenuItem newPlaylist = MenuUtil.createContextMenuItem("New Playlist", 200);
+		newPlaylist.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
+		newPlaylist.setOnAction(e -> createNewPlaylist());
+
+		MenuItem addFile = MenuUtil.createContextMenuItem("Add File to Library...", 200);
+		addFile.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
+		addFile.setOnAction(e -> addFileToLib());
+
+		MenuItem addFolder = MenuUtil.createContextMenuItem("Add Folder to Library...", 200);
+		addFolder.setOnAction(e -> addFolderToLib());
+
+		MenuItem exit = MenuUtil.createContextMenuItem("Exit", 200);
+		exit.setOnAction(e -> Platform.exit());
+
+		file.getItems().addAll(newPlaylist, addFile, addFolder, exit);
+
+		/*
+		 * Control
+		 */
+		play = MenuUtil.createContextMenuItem("Play", 150);
+		play.setAccelerator(new KeyCodeCombination(KeyCode.S));
+		play.setOnAction(e -> pressPlayTrack());
+		play.setDisable(true);
+
+		next = MenuUtil.createContextMenuItem("Next", 150);
+		next.setAccelerator(new KeyCodeCombination(KeyCode.D));
+		next.setOnAction(e -> nextSong());
+		next.setDisable(true);
+
+		previous = MenuUtil.createContextMenuItem("Previous", 150);
+		previous.setAccelerator(new KeyCodeCombination(KeyCode.A));
+		previous.setOnAction(e -> previousSong());
+		previous.setDisable(true);
+
+		stop = MenuUtil.createContextMenuItem("Stop", 150);
+		stop.setOnAction(e -> System.out.println("stop"));
+		stop.setDisable(true);
+
+		control.getItems().addAll(play, next, previous, stop);
+
+		/*
+		 * Help
+		 */
+		MenuItem about = MenuUtil.createContextMenuItem("About", 100);
+		help.getItems().addAll(about);
+
+		menuMain.getMenus().addAll(file, control, help);
+	}
+
+	private void initSearch() {
 		CustomSearch customSearch = new CustomSearch(primaryStage, tableTracks, tfSearch);
 		customSearch.createSeachPopup();
 		customSearch.search();
@@ -149,15 +220,15 @@ public class MainController implements Initializable {
 
 		setupTableTracks(getPlaylistTracks(0), PlaceHolderUtil.LIB);
 		tableTracks.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		
+
 		tableTracks.setRowFactory(tv -> {
 			TableRow<Track> row = new TableRow<>();
 			ContextMenu contextMenu = new ContextMenu();
-			MenuItem play = MenuUtil.createContextMenuItem("Play");
-			MenuItem getInfo = MenuUtil.createContextMenuItem("Get Info");
-			MenuItem showInWE = MenuUtil.createContextMenuItem("Show in Window Explorer");
-			MenuItem addToPl = MenuUtil.createContextMenuItem("Add to Playlist");
-			MenuItem delete = MenuUtil.createContextMenuItem("Delete");
+			MenuItem play = MenuUtil.createContextMenuItem("Play", 200);
+			MenuItem getInfo = MenuUtil.createContextMenuItem("Get Info", 200);
+			MenuItem showInWE = MenuUtil.createContextMenuItem("Show in Window Explorer", 200);
+			MenuItem addToPl = MenuUtil.createContextMenuItem("Add to Playlist", 200);
+			MenuItem delete = MenuUtil.createContextMenuItem("Delete", 200);
 
 			ObservableList<Track> selectedTracks = tableTracks.getSelectionModel().getSelectedItems();
 			play.setOnAction(e -> playSelectedTracks(tableTracks.getSelectionModel().getSelectedItem()));
@@ -188,13 +259,18 @@ public class MainController implements Initializable {
 		Collections.sort(getPlaylistTracks(0));
 
 		lvPlaylists.setPadding(new Insets(2, 0, 2, 15));
-		lvPlaylists.setCellFactory(lv -> new CustomListCell());
+		lvPlaylists.setCellFactory(lv -> {
+			CustomListCell cell = new CustomListCell(this);
+			return cell;
+		});
+
 		scrollToSelectedItemListView(0);
 		lvPlaylists.setOnMouseClicked(e -> selectPlaylist());
 
 		lvAddTracksToPl.setCellFactory(lv -> new CustomListCellNewPl());
 		lvAddTracksToPl
 				.setPlaceholder(PlaceHolderUtil.createPlaceHolder(PlaceHolderUtil.ADD_TRACK_PLAYLIST, Pos.TOP_CENTER));
+
 	}
 
 	private void selectPlaylist() {
@@ -213,9 +289,10 @@ public class MainController implements Initializable {
 		bottomBar.setVisible(false);
 		bottomBar.setManaged(false);
 
+		volumeSlider.setValue(50);
 		nextTrack.setOnMouseClicked(v -> nextSong());
 		preTrack.setOnMouseClicked(v -> previousSong());
-		playTrack.setOnMouseClicked(v -> onPressPlayTrack());
+		playTrack.setOnMouseClicked(v -> pressPlayTrack());
 		optionPlayTrack.setOnMouseClicked(v -> onChangeOptionPlayTrack());
 	}
 
@@ -238,18 +315,33 @@ public class MainController implements Initializable {
 		}
 	}
 
-	private void onPressPlayTrack() {
+	private void pressPlayTrack() {
 		if (mMediaPlayer.getStatus().equals(Status.PLAYING)) {
 			playTrack.setGlyphName("PLAY");
 			mMediaPlayer.pause();
+			play.setGraphic(MenuUtil.setTextLabel("Play", 150));
 		} else if (mMediaPlayer.getStatus().equals(Status.PAUSED)) {
 			playTrack.setGlyphName("PAUSE");
 			mMediaPlayer.play();
+			play.setGraphic(MenuUtil.setTextLabel("Pause", 150));
 		}
 	}
 
 	public void onAddFiletoLibrary(ActionEvent e) {
+		addFileToLib();
+	}
+
+	private void addFileToLib() {
 		ObservableList<Track> tracksChooser = FileChooserUtil.getTracksChooser(primaryStage);
+		if (tracksChooser != null && tracksChooser.size() > 0) {
+			getPlaylistTracks(0).addAll(tracksChooser);
+			Collections.sort(getPlaylistTracks(0));
+			mData.updateLibraryFile(tracksChooser);
+		}
+	}
+
+	private void addFolderToLib() {
+		ObservableList<Track> tracksChooser = FileChooserUtil.addTracksFromFolder(primaryStage);
 		if (tracksChooser != null && tracksChooser.size() > 0) {
 			getPlaylistTracks(0).addAll(tracksChooser);
 			Collections.sort(getPlaylistTracks(0));
@@ -260,12 +352,22 @@ public class MainController implements Initializable {
 	private void onDoubleClickToPlayTrack(MouseEvent e, TableRow<Track> row) {
 		if (e.getClickCount() == 2 && !row.isEmpty() && e.getButton() == MouseButton.PRIMARY) {
 			if (row.getItem() != null)
-				if (checkFile(row.getItem()))
+				if (checkFile(row.getItem())) {
 					playSong(row.getItem());
+
+					play.setDisable(false);
+					next.setDisable(false);
+					stop.setDisable(false);
+					previous.setDisable(false);
+				}
 		}
 	}
 
 	public void showListViewAddTracks(MouseEvent e) {
+		showAddTracks();
+	}
+
+	private void showAddTracks() {
 		hideTitlePlaylist();
 		hideNavigationPl();
 		showAddTracksToPl();
@@ -279,7 +381,11 @@ public class MainController implements Initializable {
 	}
 
 	public void onCreateNewPl(MouseEvent e) {
-		String name = DialogUtil.createDialog();
+		createNewPlaylist();
+	}
+
+	private void createNewPlaylist() {
+		String name = DialogUtil.createDialog("New Playlist", "Playlist");
 		if (!name.isEmpty()) {
 			showTitlePlaylist();
 
@@ -288,7 +394,7 @@ public class MainController implements Initializable {
 			newPl.setName(name);
 			playlists.add(newPl);
 
-			mData.updatePlaylists(newPl);
+			mData.updatePlaylist(newPl);
 			scrollToSelectedItemListView(playlists.size() - 1);
 			setupTableTracks(newPl.getTracks(), PlaceHolderUtil.PLAYLIST);
 		}
@@ -310,7 +416,7 @@ public class MainController implements Initializable {
 		ArrayList<Track> tracks = (ArrayList<Track>) event.getDragboard().getContent(dragTracksFormat);
 		getSelectedPlaylist().getTracks().addAll(tracks);
 		getSelectedPlaylist().setKeysByTracks(tracks);
-		
+
 		if (tracks.size() > 0) {
 			lvAddTracksToPl.setItems(getSelectedPlaylist().getTracks());
 			Platform.runLater(() -> {
@@ -340,17 +446,16 @@ public class MainController implements Initializable {
 
 	public void handleDragFilesDropped(DragEvent event) {
 		List<File> files = event.getDragboard().getFiles();
+		List<File> listFiles = new ArrayList<File>();
 		if (files.size() > 0) {
 			for (File file : files) {
 				if (file.isDirectory()) {
-					List<File> listFiles = new ArrayList<File>();
-					for (File item : file.listFiles())
-						listFiles.add(item);
-					addFilesToLib(listFiles);
+					FileChooserUtil.readFilesFromFolder(listFiles, file);
 				} else {
-					addFilesToLib(files);
+					listFiles.add(file);
 				}
 			}
+			addFilesToLib(listFiles);
 		}
 	}
 
@@ -399,7 +504,7 @@ public class MainController implements Initializable {
 
 		mMediaPlayer.setOnReady(() -> {
 			duration = mMediaPlayer.getMedia().getDuration();
-			updatetimeTrackBar();
+			updateTimeTrackBar();
 		});
 
 		playTrack.setGlyphName("PAUSE");
@@ -411,17 +516,20 @@ public class MainController implements Initializable {
 		artistTrack.setText(track.getArtist().toString());
 		coverTrack.setImage(ImageUtil.setCoverImage(track.getCoverImage()));
 
-		mMediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> updatetimeTrackBar());
+		mMediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> updateTimeTrackBar());
 
 		trackSlider.valueProperty().addListener((observable) -> {
 			if (trackSlider.isValueChanging()) {
 				if (duration != null)
-					mMediaPlayer.seek(duration.multiply(trackSlider.getValue() / 100.0));
-				updatetimeTrackBar();
+					mMediaPlayer.seek(duration.multiply(trackSlider.getValue() / trackSlider.getMax()));
+				updateTimeTrackBar();
 			}
 		});
 
-		volumeSlider.setValue(100);
+		trackSlider.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+			updateTimeTrackBar();
+		});
+
 		updatePlayer();
 
 		volumeSlider.valueProperty().addListener((observable) -> {
@@ -459,20 +567,16 @@ public class MainController implements Initializable {
 		volumeProgressBar.setProgress(volumeSlider.getValue() / volumeSlider.getMax());
 	}
 
-	protected void updatetimeTrackBar() {
-		if (timeUp != null && trackSlider != null && volumeSlider != null && duration != null) {
+	protected void updateTimeTrackBar() {
+		if (timeUp != null && trackSlider != null && duration != null) {
 			Platform.runLater(() -> {
 				Duration currentTime = mMediaPlayer.getCurrentTime();
-
 				timeUp.setText(DurationUtil.formatTime(currentTime));
 				timeDown.setText(DurationUtil.formatTime(duration));
 
 				trackSlider.setDisable(duration.isUnknown());
-				if (!trackSlider.isDisabled() && duration.greaterThan(Duration.ZERO)
-						&& !trackSlider.isValueChanging()) {
-					trackSlider.setValue(currentTime.divide(duration.toMillis()).toMillis() * 100.0);
-					trackProgressBar.setProgress(trackSlider.getValue() / trackSlider.getMax());
-				}
+				trackSlider.setValue(currentTime.toMillis() * trackSlider.getMax() / duration.toMillis());
+				trackProgressBar.setProgress(trackSlider.getValue() / trackSlider.getMax());
 			});
 		}
 	}
@@ -487,6 +591,7 @@ public class MainController implements Initializable {
 				playSong(track);
 			}
 			break;
+
 		case SONG_RANDOM:
 			Random rd = new Random();
 			idx = rd.nextInt(getSelectedPlaylist().getTracks().size() - 1);
@@ -496,10 +601,11 @@ public class MainController implements Initializable {
 				playSong(track);
 			}
 			break;
+
 		default:
 			if (getSelectedPlaylist().getTracks().size() == idx + 1)
 				idx = -1;
-			
+
 			tableTracks.getSelectionModel().clearAndSelect(idx + 1);
 			track = tableTracks.getItems().get(idx + 1);
 			if (track != null) {
@@ -615,5 +721,44 @@ public class MainController implements Initializable {
 	private void hideTitlePlaylist() {
 		titlePlaylistBorderPane.setManaged(false);
 		titlePlaylistBorderPane.setVisible(false);
+	}
+
+	public void editPlaylist(int index) {
+		if (index == lvPlaylists.getSelectionModel().getSelectedIndex()) {
+			showAddTracks();
+		}
+	}
+
+	public void deletePlaylist(int index) {
+		if (index == lvPlaylists.getSelectionModel().getSelectedIndex()) {
+			mData.deletePlaylist(getSelectedPlaylist());
+			playlists.remove(index);
+			
+			if (playlists.size() > 1) {
+				if (playlists.size() > index) {
+					scrollToSelectedItemListView(index);
+				} else {
+					index = playlists.size() - 1;
+					scrollToSelectedItemListView(index);
+				}
+				setupTableTracks(getPlaylistTracks(index), PlaceHolderUtil.PLAYLIST);
+			} else {
+				scrollToSelectedItemListView(0);
+				setupTableTracks(getPlaylistTracks(0), PlaceHolderUtil.LIB);
+			}
+		}
+	}
+
+	public void renamePlaylist(int index) {
+		if (index == lvPlaylists.getSelectionModel().getSelectedIndex()) {
+			String name = DialogUtil.createDialog("Rename Playlist", getSelectedPlaylist().getName());
+			if (!name.isEmpty()) {
+				getSelectedPlaylist().setName(name);
+				mData.renamePlaylist(getSelectedPlaylist());
+				lvPlaylists.setItems(playlists);
+				lvPlaylists.setCellFactory(lv -> new CustomListCell(this));
+				updateTotalItemPlaylist();
+			}
+		}
 	}
 }

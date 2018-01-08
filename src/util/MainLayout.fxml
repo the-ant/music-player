@@ -20,29 +20,7 @@
 	<top>
 		<VBox prefHeight="65.0" prefWidth="761.0" BorderPane.alignment="CENTER">
 			<children>
-				<MenuBar fx:id="menuMain" prefHeight="10.0" prefWidth="761.0" style="-fx-background-color: rgb(214, 212, 212);">
-					<menus>
-						<Menu mnemonicParsing="false" text="File">
-							<items>
-								<MenuItem mnemonicParsing="false" onAction="#onAddFiletoLibrary" text="Add File to Library...">
-									<accelerator>
-										<KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-									</accelerator>
-								</MenuItem>
-								<MenuItem mnemonicParsing="false" text="New" />
-							</items>
-						</Menu>
-						<Menu mnemonicParsing="false" text="Edit">
-							<items>
-								<MenuItem mnemonicParsing="false" text="Delete" />
-							</items>
-						</Menu>
-						<Menu mnemonicParsing="false" text="Help">
-							<items>
-								<MenuItem mnemonicParsing="false" text="About" />
-							</items>
-						</Menu>
-					</menus>
+				<MenuBar fx:id="menuMain" prefHeight="10.0" prefWidth="761.0" style="-fx-background-color: rgb(214, 212, 212);" stylesheets="@../css/menu.css">
 					<VBox.margin>
 						<Insets />
 					</VBox.margin>
@@ -89,7 +67,7 @@
 				<HBox alignment="BOTTOM_LEFT" GridPane.columnIndex="1">
 					<children>
 						<ImageView fx:id="coverTrack" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS" />
-						<StackPane>
+						<StackPane prefHeight="80.0" prefWidth="533.0">
 							<children>
 								<VBox prefWidth="510.0">
 									<children>
@@ -132,18 +110,18 @@
 										</BorderPane>
 										<StackPane VBox.vgrow="ALWAYS">
 											<children>
-												<ProgressBar fx:id="trackProgressBar" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="8.0" prefWidth="510.0" progress="1.0">
+												<ProgressBar fx:id="trackProgressBar" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="8.0" prefWidth="521.0" progress="0.44">
 													<StackPane.margin>
 														<Insets bottom="-8.0" />
 													</StackPane.margin>
 												</ProgressBar>
-												<Slider fx:id="trackSlider" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="10.0" prefWidth="510.0">
+												<Slider fx:id="trackSlider" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="10.0" prefWidth="521.0">
 													<StackPane.margin>
 														<Insets bottom="-8.0" />
 													</StackPane.margin>
-													<padding>
-														<Insets right="-13.0" />
-													</padding>
+                                       <padding>
+                                          <Insets right="-12.0" />
+                                       </padding>
 												</Slider>
 											</children>
 											<VBox.margin>
@@ -158,7 +136,7 @@
 				</HBox>
 				<StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: rgb(227, 227, 229);" stylesheets="@../css/player.css" GridPane.columnIndex="2">
 					<children>
-						<ProgressBar fx:id="volumeProgressBar" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="10.0" prefWidth="200.0" progress="0.0" StackPane.alignment="CENTER" />
+						<ProgressBar fx:id="volumeProgressBar" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="7.0" prefWidth="200.0" progress="0.0" StackPane.alignment="CENTER" />
 						<Slider fx:id="volumeSlider" maxWidth="-Infinity" prefWidth="200.0" StackPane.alignment="CENTER" />
 					</children>
 					<padding>

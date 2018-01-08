@@ -1,6 +1,11 @@
 
 .menu-item:focused{
      -fx-background-color: rgb(166.0, 158.0, 255.0);
+     -fx-text-fill: black;
+}
+.menu-item:hover{
+     -fx-background-color: rgb(166.0, 158.0, 255.0);
+     -fx-text-fill: white;
 }
 
 .menu:hover {

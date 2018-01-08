@@ -21,9 +21,9 @@ import pojos.Track;
 
 public class DialogUtil {
 
-	public static String createDialog() {
+	public static String createDialog(String title, String namePlaylist) {
 		Dialog<String> dialog = new Dialog<>();
-		dialog.setTitle("New Playlist");
+		dialog.setTitle(title);
 		dialog.setGraphic(new ImageView(new Image("images/img_input_name_playlist.png")));
 
 		Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
@@ -41,7 +41,7 @@ public class DialogUtil {
 		Label titleName = new Label("Name:");
 		TextField name = new TextField();
 		name.setPrefWidth(250);
-		name.setText("Playlist");
+		name.setText(namePlaylist);
 
 		grid.add(titleName, 0, 0);
 		grid.add(name, 1, 0);
