@@ -24,12 +24,14 @@ public class Main extends Application {
 	public void start(Stage primaryStage) {
 		try {
 			setPrimaryStage(primaryStage);
-			Parent root = FXMLLoader.load(getClass().getResource("/util/MainLayout.fxml"));
+			Parent root = FXMLLoader.load(getClass().getResource("/view/MainLayout.fxml"));
 			primaryStage.setTitle("Music Player");
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(this.getClass().getResource("/css/app.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.getIcons().add(new Image("/icons/ic_app.png"));
+			primaryStage.setMinWidth(1200);
+			primaryStage.setMinHeight(720);
 			primaryStage.show();
 
 			root.setOnMousePressed(e -> {

@@ -1,0 +1,18 @@
+
+.list-view {
+	-fx-focus-color: rgb(73, 73, 73);
+	-fx-faint-focus-color: transparent;
+	-fx-text-fill: white;
+	-fx-background-color: transparent;
+	-fx-background-radius: 10px;
+}
+
+#searchPane {
+	/*-fx-background-image: url('../images/playqueue-background-image.png');*/
+	-fx-background-repeat: no-repeat;
+	-fx-background-position: center;
+	-fx-background-color: transparent;
+	-fx-effect: dropshadow(gaussian, rgb(73, 73, 73), 15, 0.3, 0, 0);
+}
+
+

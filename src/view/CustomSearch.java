@@ -164,8 +164,8 @@ public class CustomSearch {
 		root.setItems(list);
 
 		if (!searchPopup.isShowing()) {
-			searchPopup.setX(primaryStage.getX() + 905);
-			searchPopup.setY(primaryStage.getY() + 95);
+			searchPopup.setX(tfSearch.getLayoutX() + 3);
+			searchPopup.setY(tfSearch.getLayoutY() + 82);
 			searchPopup.show();
 			searchShowAnimation.play();
 		}

@@ -67,9 +67,10 @@ public class Playlist {
 		this.keys = (keys);
 	}
 
-	public void setKeysByTracks(ArrayList<Track> keys) {
-		for (Track track : keys) {
-			this.keys.add(track.getId());
+	public void setKeysByTracks() {
+		keys.clear();
+		for (Track track : tracks) {
+			keys.add(track.getId());
 		}
 	}
 
@@ -82,17 +83,18 @@ public class Playlist {
 	}
 
 	public void removeAllKey() {
-		this.keys.removeAll(keys);
+		keys.clear();
 		for (Track item : tracks) {
-			this.keys.add(item.getId());
+			keys.add(item.getId());
 		}
 	}
 
 	public void removeAllTrack(ObservableList<Track> selectedTracks) {
 		for (int j = 0; j < selectedTracks.size(); j++)
-			for (int i = 0; i < this.tracks.size(); i++)
-				if (this.tracks.get(i).getId() == selectedTracks.get(j).getId()) {
-					this.tracks.remove(i);
+			for (int i = 0; i < tracks.size(); i++)
+				if (tracks.get(i).getId() == selectedTracks.get(j).getId()) {
+					System.out.println("Id: " + tracks.get(i).getId());
+					tracks.remove(i);
 				}
 	}
 }
